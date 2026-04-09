@@ -9,13 +9,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --primary: #2DD4BF; /* 활기찬 티알색 */
+  --primary: #2DD4BF;
   --primary-dark: #0D9488;
-  --bg-deep: #020617; /* 더 깊은 다크 모드 */
+  --bg-deep: #020617;
   --bg-card: #1e293b;
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
-  --accent: #FB923C; /* 오렌지 포인트 */
+  --accent: #FB923C;
   --danger: #F87171;
 }
 
@@ -23,14 +23,14 @@ body { font-family: 'Pretendard', sans-serif; background-color: var(--bg-deep); 
 .reveal { background-color: var(--bg-deep); }
 .reveal .slides section { text-align: left; padding: 20px; box-sizing: border-box; }
 
-/* 헤더 및 제목 스타일 */
+/* 제목 스타일 */
 .reveal h1 { font-size: 2.8em; font-weight: 800; color: var(--text-main); line-height: 1.1; margin-bottom: 20px; }
 .reveal h2 { font-size: 1.8em; font-weight: 700; color: var(--primary); margin-bottom: 15px; border-left: 5px solid var(--primary); padding-left: 15px; }
 
 /* 레이아웃 시스템 */
 .dashboard-grid {
   display: grid;
-  grid-template-columns: 380px 1fr; /* PC: 제어판 고정폭, 그래프 유연하게 */
+  grid-template-columns: 380px 1fr;
   gap: 25px;
   align-items: start;
 }
@@ -39,7 +39,7 @@ body { font-family: 'Pretendard', sans-serif; background-color: var(--bg-deep); 
   .dashboard-grid { grid-template-columns: 1fr; gap: 15px; }
   .reveal h1 { font-size: 1.8em; }
   .reveal h2 { font-size: 1.4em; }
-  .chart-container { height: 280px !important; }
+  .chart-container { height: 320px !important; }
 }
 
 /* 카드 스타일 */
@@ -51,11 +51,10 @@ body { font-family: 'Pretendard', sans-serif; background-color: var(--bg-deep); 
   border: 1px solid rgba(255,255,255,0.05);
 }
 
-/* 컨트롤 박스 */
 .control-group { margin-bottom: 20px; }
 .label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-.label-text { font-size: 0.85em; color: var(--text-muted); font-weight: 600; }
-.label-value { font-family: 'JetBrains Mono', monospace; font-size: 1em; color: var(--primary); font-weight: 700; }
+.label-text { font-size: 0.9em; color: var(--text-muted); font-weight: 600; }
+.label-value { font-family: 'JetBrains Mono', monospace; font-size: 1.1em; color: var(--primary); font-weight: 700; }
 
 input[type=range] {
   width: 100%;
@@ -75,32 +74,23 @@ input[type=range] {
   padding: 15px;
   margin-top: 20px;
 }
-.summary-label { font-size: 0.75em; color: var(--text-muted); text-transform: uppercase; margin-bottom: 5px; }
-.summary-value { font-size: 1.8em; font-weight: 800; color: var(--text-main); font-family: 'JetBrains Mono', monospace; }
+.summary-label { font-size: 0.8em; color: var(--text-muted); text-transform: uppercase; margin-bottom: 5px; font-weight: 600; }
+.summary-value { font-size: 2em; font-weight: 800; color: var(--text-main); font-family: 'JetBrains Mono', monospace; line-height: 1; }
 
 /* 차트 컨테이너 */
 .chart-container {
   position: relative;
   width: 100%;
-  height: 480px;
+  height: 500px;
   background: var(--bg-card);
   border-radius: 20px;
-  padding: 20px;
+  padding: 25px;
   box-sizing: border-box;
 }
 
-/* 특수 문구 */
-.badge {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 8px;
-  font-size: 0.7em;
-  font-weight: 700;
-  margin-top: 10px;
-}
+.badge { display: inline-block; padding: 4px 12px; border-radius: 8px; font-size: 0.75em; font-weight: 700; margin-top: 10px; }
 .badge-info { background: rgba(251, 146, 60, 0.2); color: var(--accent); }
 
-/* 화살표 내비게이션 색상 */
 .reveal .controls { color: var(--primary); }
 </style>
 </head>
@@ -112,8 +102,8 @@ input[type=range] {
   <div style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
     <div style="background:var(--primary); color:var(--bg-deep); padding:5px 20px; border-radius:50px; font-weight:800; font-size:0.8em; margin-bottom:20px;">INVESTMENT STRATEGY</div>
     <h1>복리의 마법과<br><span style="color:var(--primary);">은퇴 자산 설계</span></h1>
-    <p style="max-width:700px; color:var(--text-muted); font-size:1.1em;">시간과 수익률이 만났을 때 자산은 어떻게 변화할까요?<br>직접 수치를 조절하며 미래를 확인해보세요.</p>
-    <div style="margin-top:40px; font-size:0.8em; color:var(--primary); font-weight:600;">시작하려면 화살표(→)를 누르세요</div>
+    <p style="max-width:700px; color:var(--text-muted); font-size:1.1em;">시간과 수익률이 자산을 어떻게 바꾸는지 확인해보세요.</p>
+    <div style="margin-top:40px; font-size:0.9em; color:var(--primary); font-weight:600;">시작하려면 화살표(→)를 누르세요</div>
   </div>
 </section>
 
@@ -164,7 +154,7 @@ input[type=range] {
       <div class="summary-box">
         <div class="summary-label">투자 후 예상 목돈</div>
         <div class="summary-value" id="s2result">—</div>
-        <div style="font-size:0.7em; color:var(--text-muted); margin-top:5px;">원금: <span id="s2principal" style="color:var(--text-main);">—</span></div>
+        <div style="font-size:0.8em; color:var(--text-muted); margin-top:8px;">원금: <span id="s2principal" style="color:var(--text-main); font-weight:600;">—</span></div>
       </div>
     </div>
     <div class="chart-container">
@@ -192,7 +182,7 @@ input[type=range] {
       <div class="summary-box" style="background:rgba(30, 41, 59, 0.8);">
         <div class="summary-label">매월 세전 수령액</div>
         <div class="summary-value" id="s3result" style="color:var(--accent);">—</div>
-        <div id="s3status" style="margin-top:10px; font-size:0.75em; font-weight:700;"></div>
+        <div id="s3status" style="margin-top:10px; font-size:0.8em; font-weight:700;"></div>
       </div>
     </div>
     <div class="chart-container">
@@ -207,51 +197,64 @@ input[type=range] {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-// Reveal.js 설정
 Reveal.initialize({
   hash: true,
   controls: true,
   progress: true,
   center: false,
   width: 1280,
-  height: 800,
+  height: 850,
   margin: 0.1,
   controlsBackArrows: 'always'
 });
 
 const charts = {};
 
-// 공통 차트 옵션 (읽기 쉬운 폰트 적용)
+// 그래프 시인성 대폭 강화 옵션
 const chartOptions = {
   responsive: true,
   maintainAspectRatio: false,
+  layout: { padding: { top: 10, bottom: 10 } },
   plugins: {
-    legend: { labels: { color: '#f8fafc', font: { size: 14, weight: '600', family: 'Pretendard' } } },
-    tooltip: { padding: 15, titleFont: { size: 16 }, bodyFont: { size: 14 } }
+    legend: { 
+      position: 'top',
+      labels: { 
+        color: '#f1f5f9', // 더 밝은 흰색
+        font: { size: 16, weight: '700', family: 'Pretendard' }, // 크기 키우고 굵게
+        padding: 20
+      } 
+    },
+    tooltip: { padding: 15, titleFont: { size: 16, weight: '700' }, bodyFont: { size: 15 } }
   },
   scales: {
-    x: { ticks: { color: '#94a3b8', font: { size: 13 } }, grid: { display: false } },
+    x: { 
+      ticks: { 
+        color: '#cbd5e1', // 밝은 회색
+        font: { size: 15, weight: '600' }, // 크기 키움
+        maxRotation: 0,
+        autoSkip: true,
+        maxTicksLimit: 10
+      }, 
+      grid: { display: false } 
+    },
     y: { 
       ticks: { 
-        color: '#94a3b8', 
-        font: { size: 13 },
+        color: '#cbd5e1', 
+        font: { size: 15, weight: '600' }, 
         callback: v => v >= 100000000 ? (v/100000000).toFixed(1) + '억' : (v/10000).toLocaleString() + '만'
       },
-      grid: { color: 'rgba(255,255,255,0.05)' }
+      grid: { color: 'rgba(255,255,255,0.08)', drawBorder: false }
     }
   }
 };
 
-// 숫자 포맷터
 const fmtK = v => (v/10000).toLocaleString() + '만';
 const fmtWon = v => v >= 100000000 ? (v/100000000).toFixed(2) + '억 원' : (v/10000).toLocaleString() + '만 원';
 
-// 01. 거치식 업데이트
 function updateS1() {
   const p = +document.getElementById('s1p').value;
   const r = +document.getElementById('s1r').value / 100;
   const y = +document.getElementById('s1y').value;
-
   document.getElementById('s1pv').textContent = fmtK(p);
   document.getElementById('s1rv').textContent = (r*100).toFixed(1) + '%';
   document.getElementById('s1yv').textContent = y + '년';
@@ -259,7 +262,6 @@ function updateS1() {
   const labels = Array.from({length: y + 1}, (_, i) => i + '년');
   const compound = labels.map((_, i) => Math.round(p * Math.pow(1 + r, i)));
   const simple = labels.map((_, i) => Math.round(p * (1 + (r * i))));
-
   document.getElementById('s1result').textContent = fmtWon(compound[y]);
   document.getElementById('s1rule').textContent = `72의 법칙: 원금 2배까지 약 ${(72/(r*100)).toFixed(1)}년`;
 
@@ -269,20 +271,18 @@ function updateS1() {
     data: {
       labels,
       datasets: [
-        { label: '복리 자산', data: compound, borderColor: '#2DD4BF', backgroundColor: 'rgba(45, 212, 191, 0.1)', fill: true, tension: 0.4, borderWidth: 3, pointRadius: 0 },
-        { label: '단리 자산', data: simple, borderColor: '#94a3b8', borderDash: [5, 5], fill: false, tension: 0, borderWidth: 2, pointRadius: 0 }
+        { label: '복리(Compound)', data: compound, borderColor: '#2DD4BF', backgroundColor: 'rgba(45, 212, 191, 0.15)', fill: true, tension: 0.4, borderWidth: 4, pointRadius: 0 },
+        { label: '단리(Simple)', data: simple, borderColor: '#94a3b8', borderDash: [6, 4], fill: false, tension: 0, borderWidth: 2, pointRadius: 0 }
       ]
     },
     options: chartOptions
   });
 }
 
-// 02. 적립식 업데이트
 function updateS2() {
   const m = +document.getElementById('s2m').value;
   const r = +document.getElementById('s2r').value / 100;
   const y = +document.getElementById('s2y').value;
-
   document.getElementById('s2mv').textContent = fmtK(m);
   document.getElementById('s2rv').textContent = (r*100).toFixed(1) + '%';
   document.getElementById('s2yv').textContent = y + '년';
@@ -295,7 +295,6 @@ function updateS2() {
     history.push(Math.round(total));
     principal.push(m * 12 * i);
   }
-
   document.getElementById('s2result').textContent = fmtWon(history[y]);
   document.getElementById('s2principal').textContent = fmtWon(principal[y]);
 
@@ -305,20 +304,18 @@ function updateS2() {
     data: {
       labels: Array.from({length: y + 1}, (_, i) => i + '년'),
       datasets: [
-        { label: '누적 수익', data: history.map((v, i) => v - principal[i]), backgroundColor: '#2DD4BF' },
-        { label: '납입 원금', data: principal, backgroundColor: '#334155' }
+        { label: '투자 수익', data: history.map((v, i) => v - principal[i]), backgroundColor: '#2DD4BF', borderRadius: 4 },
+        { label: '납입 원금', data: principal, backgroundColor: '#475569', borderRadius: 4 }
       ]
     },
-    options: { ...chartOptions, scales: { ...chartOptions.scales, x: { stacked: true }, y: { ...chartOptions.scales.y, stacked: true } } }
+    options: { ...chartOptions, scales: { ...chartOptions.scales, x: { ...chartOptions.scales.x, stacked: true }, y: { ...chartOptions.scales.y, stacked: true } } }
   });
 }
 
-// 03. 은퇴 인출 업데이트
 function updateS3() {
   const p = +document.getElementById('s3p').value;
   const r = +document.getElementById('s3r').value / 100;
   const w = +document.getElementById('s3w').value / 100;
-
   document.getElementById('s3pv').textContent = p >= 100000000 ? (p/100000000).toFixed(1) + '억' : fmtK(p);
   document.getElementById('s3rv').textContent = (r*100).toFixed(1) + '%';
   document.getElementById('s3wv').textContent = (w*100).toFixed(1) + '%';
@@ -335,7 +332,7 @@ function updateS3() {
 
   const isSafe = r >= w;
   const statusEl = document.getElementById('s3status');
-  statusEl.textContent = isSafe ? "✅ 원금이 유지/증가되는 안전한 구조입니다." : "⚠️ 원금이 고갈되고 있습니다. 인출률을 낮추세요.";
+  statusEl.textContent = isSafe ? "✅ 원금이 보존/증가하는 계획" : "⚠️ 자산 고갈 위험 있음";
   statusEl.style.color = isSafe ? "#2DD4BF" : "#F87171";
 
   if (charts.s3) charts.s3.destroy();
@@ -343,17 +340,17 @@ function updateS3() {
     type: 'line',
     data: {
       labels: Array.from({length: 31}, (_, i) => i + '년'),
-      datasets: [{ label: '잔여 자산 추이', data: history, borderColor: isSafe ? '#2DD4BF' : '#F87171', backgroundColor: isSafe ? 'rgba(45, 212, 191, 0.05)' : 'rgba(248, 113, 113, 0.05)', fill: true, tension: 0.3, pointRadius: 0, borderWidth: 3 }]
+      datasets: [{ label: '자산 잔액', data: history, borderColor: isSafe ? '#2DD4BF' : '#F87171', backgroundColor: isSafe ? 'rgba(45, 212, 191, 0.1)' : 'rgba(248, 113, 113, 0.1)', fill: true, tension: 0.3, pointRadius: 0, borderWidth: 4 }]
     },
     options: chartOptions
   });
 }
 
-// 초기 호출 및 리사이즈 대응
 updateS1(); updateS2(); updateS3();
 window.addEventListener('resize', () => Object.values(charts).forEach(c => c && c.resize()));
-Reveal.on('slidechanged', () => Object.values(charts).forEach(c => c && c.resize()));
-
+Reveal.on('slidechanged', () => {
+  setTimeout(() => Object.values(charts).forEach(c => c && c.resize()), 100);
+});
 </script>
 </body>
 </html>
