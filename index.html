@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>투자 시뮬레이터 v5.0 | 통합 자산 설계</title>
+    <title>투자 시뮬레이터 | 복리의 힘과 은퇴 설계</title>
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
     <style>
@@ -26,22 +26,38 @@
             width: 100%;
         }
 
-        header {
-            background: rgba(15, 23, 42, 0.9);
-            padding: 15px 20px;
-            text-align: center;
-            border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
+        /* 최상단 헤더(Hero) */
+        .hero-banner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px 40px;
+            text-align: left;
         }
-        header h1 { font-size: 1.1rem; color: var(--primary); letter-spacing: 1px; }
+        .hero-banner h1 {
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            letter-spacing: -0.02em;
+        }
+        .hero-banner h1 span { color: var(--primary); }
+        .hero-banner p {
+            font-size: clamp(1rem, 3vw, 1.25rem);
+            color: var(--text-muted);
+            line-height: 1.6;
+            max-width: 700px;
+            word-break: keep-all;
+        }
 
-        main { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        section { margin-bottom: 60px; width: 100%; }
-        .section-title { margin-bottom: 25px; }
-        .section-title h2 { font-size: 1.6rem; margin-bottom: 5px; color: var(--text-main); }
-        .section-title p { color: var(--text-muted); font-size: 0.9rem; }
+        main { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        section { margin-bottom: 80px; width: 100%; }
+        
+        .section-header {
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+        .section-header h2 { font-size: 1.6rem; font-weight: 700; color: var(--text-main); }
 
         .dashboard { display: flex; flex-direction: column; gap: 20px; width: 100%; }
         @media (min-width: 1024px) {
@@ -50,247 +66,15 @@
 
         .card {
             background: var(--bg-card);
-            border-radius: 20px;
-            padding: 25px;
+            border-radius: 24px;
+            padding: 30px;
             border: 1px solid var(--border);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
 
-        .control-item { margin-bottom: 18px; display: flex; flex-direction: column; gap: 10px; }
-        .label-row { display: flex; justify-content: space-between; font-weight: 600; }
-        .label-text { font-size: 0.9rem; color: var(--text-muted); }
-        .label-value { color: var(--primary); font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; }
-
-        input[type=range] { width: 100%; height: 8px; border-radius: 10px; accent-color: var(--primary); cursor: pointer; }
-
-        .stat-card {
-            background: rgba(16, 185, 129, 0.08);
-            padding: 20px;
-            border-radius: 15px;
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            margin-top: 10px;
-        }
-        .stat-label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px; }
-        .stat-value { font-size: 1.6rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: var(--text-main); }
-
-        .chart-area { min-height: 400px; position: relative; }
-        .chart-container { position: absolute; top: 25px; left: 25px; right: 25px; bottom: 25px; }
-
-        footer { text-align: center; padding: 40px; color: var(--text-muted); font-size: 0.8rem; border-top: 1px solid var(--border); margin-top: 40px; }
-    </style>
-</head>
-<body>
-
-    <header><h1>INVESTMENT SIMULATOR LAB</h1></header>
-
-    <main>
-        <section id="section1">
-            <div class="section-title"><h2>01. 거치식 복리</h2><p>목돈을 한 번에 예치했을 때의 결과</p></div>
-            <div class="dashboard">
-                <div class="card">
-                    <div class="control-item">
-                        <div class="label-row"><span class="label-text">초기 원금</span><span class="label-value" id="s1p-v">2,500만</span></div>
-                        <input type="range" id="s1p" min="1000000" max="100000000" step="1000000" value="25000000">
-                    </div>
-                    <div class="control-item">
-                        <div class="label-row"><span class="label-text">연 수익률</span><span class="label-value" id="s1r-v">7.0%</span></div>
-                        <input type="range" id="s1r" min="1" max="20" step="0.5" value="7">
-                    </div>
-                    <div class="control-item">
-                        <div class="label-row"><span class="label-text">기간(년)</span><span class="label-value" id="s1y-v">20년</span></div>
-                        <input type="range" id="s1y" min="1" max="50" step="1" value="20">
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">최종 예상 금액</div>
-                        <div class="stat-value" id="s1-res">—</div>
-                    </div>
-                </div>
-                <div class="card chart-area"><div class="chart-container"><canvas id="chart1"></canvas></div></div>
-            </div>
-        </section>
-
-        <section id="section2">
-            <div class="section-title"><h2>02. 거치 및 적립식 투자</h2><p>시드머니 + 매월 추가 납입(5만원 단위)</p></div>
-            <div class="dashboard">
-                <div class="card">
-                    <div class="control-item">
-                        <div class="label-row"><span class="label-text">초기 거치액(시드)</span><span class="label-value" id="s2p-v">1,000만</span></div>
-                        <input type="range" id="s2p" min="0" max="100000000" step="1000000" value="10000000">
-                    </div>
-                    <div class="control-item">
-                        <div class="label-row"><span class="label-text">월 추가 적립액</span><span class="label-value" id="s2m-v">100만</span></div>
-                        <input type="range" id="s2m" min="0" max="5000000" step="50000" value="1000000">
-                    </div>
-                    <div class="control-item">
-                        <div class="label-row"><span class="label-text">연 수익률</span><span class="label-value" id="s2r-v">8.0%</span></div>
-                        <input type="range" id="s2r" min="1" max="20" step="0.5" value="8">
-                    </div>
-                    <div class="control-item">
-                        <div class="label-row"><span class="label-text">투자 기간(년)</span><span class="label-value" id="s2y-v">15년</span></div>
-                        <input type="range" id="s2y" min="1" max="40" step="1" value="15">
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">최종 예상 목돈</div>
-                        <div class="stat-value" id="s2-res">—</div>
-                    </div>
-                </div>
-                <div class="card chart-area"><div class="chart-container"><canvas id="chart2"></canvas></div></div>
-            </div>
-        </section>
-
-        <section id="section3">
-            <div class="section-title"><h2>03. 은퇴 인출 전략</h2><p>자산을 지키며 매달 꺼내 쓰는 법</p></div>
-            <div class="dashboard">
-                <div class="card">
-                    <div class="control-item">
-                        <div class="label-row"><span class="label-text">은퇴 시점 자산</span><span class="label-value" id="s3p-v">5억</span></div>
-                        <input type="range" id="s3p" min="50000000" max="2000000000" step="10000000" value="500000000">
-                    </div>
-                    <div class="control-item">
-                        <div class="label-row"><span class="label-text">운용 수익률</span><span class="label-value" id="s3r-v">5.0%</span></div>
-                        <input type="range" id="s3r" min="1" max="15" step="0.5" value="5">
-                    </div>
-                    <div class="control-item">
-                        <div class="label-row"><span class="label-text">연 인출률</span><span class="label-value" id="s3w-v">4.0%</span></div>
-                        <input type="range" id="s3w" min="1" max="12" step="0.5" value="4">
-                    </div>
-                    <div class="stat-card" style="background:rgba(59,130,246,0.1); border-color:rgba(59,130,246,0.2);">
-                        <div class="stat-label" style="color:var(--secondary)">매월 세전 인출액</div>
-                        <div class="stat-value" id="s3-res" style="color:var(--secondary)">—</div>
-                    </div>
-                </div>
-                <div class="card chart-area"><div class="chart-container"><canvas id="chart3"></canvas></div></div>
-            </div>
-        </section>
-    </main>
-
-    <footer><p>© 2026 Investment Sim Lab. All Rights Reserved.</p></footer>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const fmtWon = v => v >= 100000000 ? (v/100000000).toFixed(2) + '억 원' : (v/10000).toLocaleString() + '만 원';
-            const fmtK = v => (v/10000).toLocaleString() + '만';
-
-            const charts = {};
-
-            function createChart(id, type, data, options = {}) {
-                const ctx = document.getElementById(id);
-                if (charts[id]) charts[id].destroy();
-                charts[id] = new Chart(ctx, {
-                    type: type,
-                    data: data,
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { labels: { color: '#f8fafc', font: { weight: '600' } } } },
-                        scales: {
-                            y: { ticks: { color: '#94a3b8', callback: v => v >= 100000000 ? (v/100000000).toFixed(1) + '억' : (v/10000).toLocaleString() + '만' }, grid: { color: 'rgba(255,255,255,0.05)' } },
-                            x: { ticks: { color: '#94a3b8' }, grid: { display: false } }
-                        },
-                        ...options
-                    }
-                });
-            }
-
-            const updateS1 = () => {
-                const p = Number(document.getElementById('s1p').value);
-                const r = Number(document.getElementById('s1r').value) / 100;
-                const y = Number(document.getElementById('s1y').value);
-
-                document.getElementById('s1p-v').innerText = fmtK(p);
-                document.getElementById('s1r-v').innerText = (r*100).toFixed(1) + '%';
-                document.getElementById('s1y-v').innerText = y + '년';
-
-                const labels = Array.from({length: y + 1}, (_, i) => i + '년');
-                const data = labels.map((_, i) => Math.round(p * Math.pow(1 + r, i)));
-                document.getElementById('s1-res').innerText = fmtWon(data[y]);
-                createChart('chart1', 'line', { labels, datasets: [{ label: '자산 총액', data, borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', fill: true, tension: 0.4, borderWidth: 3, pointRadius: 0 }] });
-            };
-
-            const updateS2 = () => {
-                const seed = Number(document.getElementById('s2p').value);
-                const m = Number(document.getElementById('s2m').value);
-                const r = Number(document.getElementById('s2r').value) / 100;
-                const y = Number(document.getElementById('s2y').value);
-
-                document.getElementById('s2p-v').innerText = fmtK(seed);
-                document.getElementById('s2m-v').innerText = fmtK(m);
-                document.getElementById('s2r-v').innerText = (r*100).toFixed(1) + '%';
-                document.getElementById('s2y-v').innerText = y + '년';
-
-                const labels = ['시작'];
-                const history = [seed];
-                const principals = [seed];
-                
-                const monthlyRate = r / 12;
-                let balance = seed;
-                let principalSum = seed;
-
-                for (let year = 1; year <= y; year++) {
-                    labels.push(year + '년');
-                    for (let month = 1; month <= 12; month++) {
-                        balance = (balance * (1 + monthlyRate)) + m;
-                    }
-                    principalSum += (m * 12);
-                    history.push(Math.round(balance));
-                    principals.push(principalSum);
-                }
-
-                document.getElementById('s2-res').innerText = fmtWon(history[y]);
-
-                createChart('chart2', 'bar', {
-                    labels,
-                    datasets: [
-                        { label: '투자 수익', data: history.map((v, i) => v - principals[i]), backgroundColor: '#10b981' },
-                        { label: '원금 합계', data: principals, backgroundColor: '#475569' }
-                    ]
-                }, { scales: { x: { stacked: true }, y: { stacked: true } } });
-            };
-
-            const updateS3 = () => {
-                const p = Number(document.getElementById('s3p').value);
-                const r = Number(document.getElementById('s3r').value) / 100;
-                const w = Number(document.getElementById('s3w').value) / 100;
-
-                document.getElementById('s3p-v').innerText = p >= 100000000 ? (p/100000000).toFixed(1) + '억' : fmtK(p);
-                document.getElementById('s3r-v').innerText = (r*100).toFixed(1) + '%';
-                document.getElementById('s3w-v').innerText = (w*100).toFixed(1) + '%';
-
-                const monthly = (p * w) / 12;
-                document.getElementById('s3-res').innerText = (Math.round(monthly/10000)).toLocaleString() + '만 원';
-
-                const labels = Array.from({length: 31}, (_, i) => i + '년');
-                let balance = p;
-                const history = [p];
-                for (let i = 1; i <= 30; i++) {
-                    balance = (balance * (1 + r)) - (p * w);
-                    history.push(Math.round(Math.max(0, balance)));
-                }
-
-                createChart('chart3', 'line', {
-                    labels,
-                    datasets: [{ label: '자산 잔액', data: history, borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', fill: true, tension: 0.3, borderWidth: 3, pointRadius: 0 }]
-                });
-            };
-
-            // 이벤트 리스너 통합 연결
-            document.querySelectorAll('input[type=range]').forEach(el => {
-                el.addEventListener('input', (e) => {
-                    const id = e.target.id;
-                    if(id.startsWith('s1')) updateS1();
-                    else if(id.startsWith('s2')) updateS2();
-                    else if(id.startsWith('s3')) updateS3();
-                });
-            });
-
-            // 초기 실행 (모든 섹션 강제 렌더링)
-            updateS1();
-            updateS2();
-            updateS3();
-        });
-    </script>
-</body>
-</html>
+        .control-item { margin-bottom: 20px; display: flex; flex-direction: column; gap: 12px; }
+        .label-row { display: flex; justify-content: space-between; align-items: center; }
+        .label-text { font-size: 0.95rem; color: var(--text
