@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>복리의 힘 — 인터랙티브 프레젠테이션</title>
+<title>복리의 힘 — 인터액티브 프레젠테이션</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/theme/black.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -11,9 +11,6 @@
 :root {
   --teal: #1D9E75;
   --teal-light: #9FE1CB;
-  --blue: #185fa5;
-  --amber: #EF9F27;
-  --red: #E24B4A;
   --bg: #0f1117;
   --surface: #1a1d27;
   --surface2: #22263a;
@@ -26,184 +23,125 @@
   text-align: left;
   height: 100%;
   box-sizing: border-box;
-  padding: 40px 56px;
+  padding: 30px 40px;
 }
-.reveal h1, .reveal h2, .reveal h3 { font-family: 'Noto Sans KR', sans-serif; font-weight: 700; letter-spacing: -0.02em; color: var(--text); text-transform: none; }
-.reveal h1 { font-size: 2.2em; line-height: 1.2; }
-.reveal h2 { font-size: 1.5em; margin-bottom: 0.5em; }
-.reveal h3 { font-size: 1.1em; color: var(--muted); font-weight: 400; margin-top: 0; }
-.reveal p, .reveal li { font-size: 0.82em; color: var(--text); line-height: 1.8; }
-.reveal .slides { color: var(--text); }
-.tag { display: inline-block; background: rgba(29,158,117,0.18); color: var(--teal-light); font-size: 0.55em; padding: 3px 10px; border-radius: 20px; font-weight: 500; vertical-align: middle; margin-left: 10px; letter-spacing: 0.05em; }
-.accent { color: var(--teal); font-weight: 700; }
-.dim { color: var(--muted); }
+.reveal h1 { font-size: 2.5em; line-height: 1.2; font-weight: 700; color: var(--text); }
+.reveal h2 { font-size: 1.6em; margin-bottom: 0.5em; font-weight: 700; color: var(--text); }
+.reveal p { font-size: 0.85em; color: var(--muted); line-height: 1.6; }
 
-/* slide layouts */
-.slide-hero { display: flex; flex-direction: column; justify-content: center; height: 100%; }
-.slide-hero .eyebrow { font-size: 0.65em; color: var(--teal); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 16px; font-weight: 500; }
-.slide-hero h1 { font-size: 2.6em; margin: 0 0 20px; }
-.slide-hero .subtitle { font-size: 0.9em; color: var(--muted); max-width: 560px; line-height: 1.7; }
-.slide-hero .meta { margin-top: 40px; font-size: 0.62em; color: var(--muted); border-top: 1px solid var(--border); padding-top: 16px; }
+/* 레이아웃 디자인 */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr; /* PC: 좌측 입력, 우측 그래프 */
+  gap: 30px;
+  align-items: start;
+}
 
-.kpi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin: 24px 0; }
-.kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
-.kpi-label { font-size: 0.6em; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
-.kpi-val { font-size: 1.6em; font-weight: 700; color: var(--teal); font-family: 'DM Mono', monospace; }
-.kpi-sub { font-size: 0.55em; color: var(--muted); margin-top: 4px; }
+/* 모바일 전용 레이아웃 (화면 폭이 800px 이하일 때) */
+@media (max-width: 800px) {
+  .two-col {
+    grid-template-columns: 1fr; /* 세로로 한 줄씩 배치 */
+    gap: 15px;
+  }
+  .reveal .slides section { padding: 20px; }
+  .chart-box { height: 280px !important; } /* 모바일에서 그래프 높이 최적화 */
+}
 
-.ctrl-row { display: flex; align-items: center; gap: 14px; margin: 10px 0; }
-.ctrl-label { font-size: 0.62em; color: var(--muted); min-width: 80px; }
-.ctrl-val { font-size: 0.65em; font-family: 'DM Mono', monospace; color: var(--teal); min-width: 72px; text-align: right; font-weight: 500; }
-input[type=range] { flex: 1; accent-color: var(--teal); height: 4px; cursor: pointer; }
+.ctrl-row { display: flex; align-items: center; gap: 15px; margin: 12px 0; }
+.ctrl-label { font-size: 0.7em; color: var(--muted); min-width: 90px; }
+.ctrl-val { font-size: 0.75em; font-family: 'DM Mono', monospace; color: var(--teal); min-width: 80px; text-align: right; font-weight: 700; }
+input[type=range] { flex: 1; accent-color: var(--teal); cursor: pointer; }
 
-.chart-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin: 16px 0; }
-.chart-title { font-size: 0.62em; color: var(--muted); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.08em; }
+.chart-box { 
+  background: var(--surface); 
+  border: 1px solid var(--border); 
+  border-radius: 16px; 
+  padding: 20px; 
+  height: 400px; /* PC 기본 높이 */
+}
+.chart-title { font-size: 0.65em; color: var(--muted); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.05em; }
 
-.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; height: 100%; align-items: start; }
-.col-left { padding-right: 8px; }
+.kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-top: 15px; }
+.kpi-label { font-size: 0.65em; color: var(--muted); text-transform: uppercase; margin-bottom: 5px; }
+.kpi-val { font-size: 1.8em; font-weight: 700; color: var(--teal); font-family: 'DM Mono', monospace; }
 
-.formula-box { background: var(--surface2); border-left: 3px solid var(--teal); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 16px 0; font-family: 'DM Mono', monospace; font-size: 0.72em; color: var(--teal-light); }
+.pension-result { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-top: 15px; }
+.pension-monthly { font-size: 2.2em; font-weight: 700; color: var(--teal); font-family: 'DM Mono', monospace; }
 
-.highlight-box { background: rgba(29,158,117,0.1); border: 1px solid rgba(29,158,117,0.3); border-radius: 10px; padding: 14px 18px; margin: 16px 0; font-size: 0.72em; color: var(--text); line-height: 1.7; }
-.warning-box { background: rgba(239,159,39,0.1); border: 1px solid rgba(239,159,39,0.3); border-radius: 10px; padding: 14px 18px; margin: 16px 0; font-size: 0.72em; color: var(--text); line-height: 1.7; }
-
-.sp-year-grid { display: grid; grid-template-columns: repeat(6,1fr); gap: 5px; margin: 12px 0; }
-.yr { border-radius: 4px; padding: 4px 6px; font-size: 0.48em; font-family: 'DM Mono', monospace; text-align: center; color: var(--bg); font-weight: 700; }
-.yr.up { background: var(--teal); }
-.yr.dn { background: var(--red); }
-
-.pension-result { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin: 16px 0; }
-.pension-monthly { font-size: 2em; font-weight: 700; color: var(--teal); font-family: 'DM Mono', monospace; }
-.pension-note { font-size: 0.58em; color: var(--muted); margin-top: 6px; }
-
-.nav-hint { position: fixed; bottom: 20px; right: 30px; font-size: 0.55em; color: var(--muted); z-index: 999; }
-.slide-num { position: fixed; bottom: 20px; left: 30px; font-size: 0.52em; color: var(--muted); font-family: 'DM Mono', monospace; z-index: 999; }
-
-.progress-dots { display: flex; gap: 6px; margin-bottom: 24px; }
-.dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); }
-.dot.active { background: var(--teal); }
-
-/* overrides */
-.reveal .progress { background: rgba(29,158,117,0.2); }
-.reveal .progress span { background: var(--teal); }
-.reveal .controls button { color: var(--teal); }
+/* 화살표 내비게이션 스타일 */
+.reveal .controls { color: var(--teal); }
 </style>
 </head>
 <body>
 <div class="reveal">
 <div class="slides">
 
-<!-- SLIDE 1: 표지 -->
 <section>
-<div class="slide-hero">
-  <div class="progress-dots">
-    <div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+  <div style="height:100%; display:flex; flex-direction:column; justify-content:center;">
+    <div style="color:var(--teal); font-weight:500; letter-spacing:0.1em; margin-bottom:10px;">PROFIT SIMULATION</div>
+    <h1>복리의 힘<br><span style="color:var(--teal);">그리고 은퇴 설계</span></h1>
+    <p>화면 크기에 맞춰 최적화된 인터액티브 리포트입니다.<br>슬라이더를 조작하여 미래의 자산을 설계해 보세요.</p>
   </div>
-  <div class="eyebrow">Interactive Finance Seminar</div>
-  <h1>복리의 힘<br><span style="color:var(--teal);">그리고 은퇴 설계</span></h1>
-  <p class="subtitle">단순한 이자가 아닙니다. 시간이 만들어내는 기하급수적 성장, 그리고 원금을 지키며 매달 인출하는 전략까지 — 슬라이더를 직접 조작하며 숫자를 체감하세요.</p>
-  <div class="meta">화살표 키 또는 하단 버튼으로 이동 &nbsp;·&nbsp; 슬라이더는 직접 드래그 가능</div>
-</div>
 </section>
 
-<!-- SLIDE 2: 복리란 -->
 <section>
-<div class="progress-dots">
-  <div class="dot"></div><div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
-</div>
-<h2>복리란 무엇인가?</h2>
-<h3>이자에 이자가 붙는 구조 — 시간이 갈수록 기하급수적으로 성장</h3>
-<div class="formula-box">A = P × (1 + r)ⁿ &nbsp;&nbsp; P=원금 · r=연수익률 · n=기간(년)</div>
-<div class="two-col" style="margin-top:16px;">
-  <div>
-    <div class="ctrl-row"><span class="ctrl-label">초기 투자금</span><input type="range" id="s2p" min="1000000" max="100000000" step="1000000" value="25000000" oninput="s2update()"><span class="ctrl-val" id="s2pv">2,500만원</span></div>
-    <div class="ctrl-row"><span class="ctrl-label">연 수익률</span><input type="range" id="s2r" min="1" max="15" step="0.5" value="7" oninput="s2update()"><span class="ctrl-val" id="s2rv">7%</span></div>
-    <div class="ctrl-row"><span class="ctrl-label">투자 기간</span><input type="range" id="s2y" min="1" max="40" step="1" value="20" oninput="s2update()"><span class="ctrl-val" id="s2yv">20년</span></div>
-    <div class="kpi-grid" style="grid-template-columns:1fr 1fr; margin-top:16px;">
-      <div class="kpi"><div class="kpi-label">최종 금액</div><div class="kpi-val" id="s2final">—</div></div>
-      <div class="kpi"><div class="kpi-label">수익</div><div class="kpi-val" id="s2gain" style="color:var(--amber);">—</div></div>
+  <h2>01. 복리의 마법</h2>
+  <div class="two-col">
+    <div>
+      <div class="ctrl-row"><span class="ctrl-label">투자 원금</span><input type="range" id="s2p" min="1000000" max="100000000" step="1000000" value="25000000" oninput="s2update()"><span class="ctrl-val" id="s2pv">2,500만</span></div>
+      <div class="ctrl-row"><span class="ctrl-label">연 수익률</span><input type="range" id="s2r" min="1" max="20" step="0.5" value="7" oninput="s2update()"><span class="ctrl-val" id="s2rv">7%</span></div>
+      <div class="ctrl-row"><span class="ctrl-label">투자 기간</span><input type="range" id="s2y" min="1" max="40" step="1" value="20" oninput="s2update()"><span class="ctrl-val" id="s2yv">20년</span></div>
+      <div class="kpi">
+        <div class="kpi-label">예상 도달 금액</div>
+        <div class="kpi-val" id="s2final">—</div>
+      </div>
+      <div id="s2rule72" style="margin-top:15px; font-size:0.7em; color:var(--muted);"></div>
     </div>
-    <div class="highlight-box" id="s2rule72">72 ÷ 7% = <strong>10.3년</strong>마다 원금이 2배</div>
-  </div>
-  <div>
-    <div class="chart-box" style="height:200px; position:relative;">
-      <div class="chart-title">단리 vs 복리 비교</div>
+    <div class="chart-box">
+      <div class="chart-title">자산 성장 곡선 (단리 vs 복리)</div>
       <canvas id="s2chart"></canvas>
     </div>
   </div>
-</div>
 </section>
 
-<!-- SLIDE 3: S&P500 30년 실증 -->
 <section>
-<div class="progress-dots">
-  <div class="dot"></div><div class="dot"></div><div class="dot active"></div><div class="dot"></div><div class="dot"></div>
-</div>
-<h2>실제로 검증되었나? <span class="tag">S&P 500 · 30년</span></h2>
-<h3>1995–2024, 배당 재투자 기준 실제 데이터</h3>
-<div class="kpi-grid">
-  <div class="kpi"><div class="kpi-label">30년 누적 수익</div><div class="kpi-val">+2,056%</div><div class="kpi-sub">1995→2024</div></div>
-  <div class="kpi"><div class="kpi-label">연평균 복리(CAGR)</div><div class="kpi-val">~10.7%</div><div class="kpi-sub">배당 재투자 포함</div></div>
-  <div class="kpi"><div class="kpi-label">1,000만원 → </div><div class="kpi-val">2.1억원</div><div class="kpi-sub">30년 후</div></div>
-</div>
-<p style="font-size:0.62em; color:var(--muted); margin:4px 0 8px;">연도별 수익률 (초록=플러스, 빨강=마이너스) — 30년 중 마이너스는 7년뿐</p>
-<div class="sp-year-grid" id="yearBadges"></div>
-<div class="warning-box">⚠️ <strong>한국 투자자 주의:</strong> 환율 리스크 · 배당소득세 15.4% · 행동 리스크(공황 매도)가 실제 수익을 줄일 수 있음. ISA 계좌 활용으로 세금 최소화 가능.</div>
-</section>
-
-<!-- SLIDE 4: 복리 계산기 -->
-<section>
-<div class="progress-dots">
-  <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot active"></div><div class="dot"></div>
-</div>
-<h2>나의 복리 시뮬레이터</h2>
-<h3>슬라이더를 조작해 직접 체감해 보세요</h3>
-<div class="two-col">
-  <div>
-    <div class="ctrl-row"><span class="ctrl-label">초기 투자금</span><input type="range" id="s4p" min="1000000" max="200000000" step="1000000" value="35000000" oninput="s4update()"><span class="ctrl-val" id="s4pv">3,500만원</span></div>
-    <div class="ctrl-row"><span class="ctrl-label">연 수익률</span><input type="range" id="s4r" min="1" max="15" step="0.5" value="7" oninput="s4update()"><span class="ctrl-val" id="s4rv">7%</span></div>
-    <div class="ctrl-row"><span class="ctrl-label">투자 기간</span><input type="range" id="s4y" min="1" max="30" step="1" value="7" oninput="s4update()"><span class="ctrl-val" id="s4yv">7년</span></div>
-    <div class="ctrl-row"><span class="ctrl-label">월 추가납입</span><input type="range" id="s4m" min="0" max="1000000" step="50000" value="0" oninput="s4update()"><span class="ctrl-val" id="s4mv">없음</span></div>
-    <div class="kpi-grid" style="grid-template-columns:1fr 1fr; margin-top:14px;">
-      <div class="kpi"><div class="kpi-label">최종 금액</div><div class="kpi-val" id="s4final">—</div></div>
-      <div class="kpi"><div class="kpi-label">총 수익</div><div class="kpi-val" id="s4gain" style="color:var(--amber);">—</div></div>
+  <h2>02. 매달 적립식 투자</h2>
+  <div class="two-col">
+    <div>
+      <div class="ctrl-row"><span class="ctrl-label">초기 자금</span><input type="range" id="s4p" min="0" max="100000000" step="1000000" value="10000000" oninput="s4update()"><span class="ctrl-val" id="s4pv">1,000만</span></div>
+      <div class="ctrl-row"><span class="ctrl-label">월 적립액</span><input type="range" id="s4m" min="0" max="3000000" step="100000" value="1000000" oninput="s4update()"><span class="ctrl-val" id="s4mv">100만</span></div>
+      <div class="ctrl-row"><span class="ctrl-label">연 수익률</span><input type="range" id="s4r" min="1" max="15" step="0.5" value="8" oninput="s4update()"><span class="ctrl-val" id="s4rv">8%</span></div>
+      <div class="ctrl-row"><span class="ctrl-label">적립 기간</span><input type="range" id="s4y" min="1" max="30" step="1" value="10" oninput="s4update()"><span class="ctrl-val" id="s4yv">10년</span></div>
+      <div class="kpi">
+        <div class="kpi-label">최종 모은 돈</div>
+        <div class="kpi-val" id="s4final">—</div>
+      </div>
     </div>
-  </div>
-  <div>
-    <div class="chart-box" style="height:220px;position:relative;">
-      <div class="chart-title">연도별 자산 성장</div>
+    <div class="chart-box">
+      <div class="chart-title">누적 원금과 투자 수익 비중</div>
       <canvas id="s4chart"></canvas>
     </div>
   </div>
-</div>
 </section>
 
-<!-- SLIDE 5: 연금 시뮬레이터 -->
 <section>
-<div class="progress-dots">
-  <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot active"></div>
-</div>
-<h2>은퇴 후 — 원금 보존형 연금</h2>
-<h3>원금을 줄이지 않고 매달 얼마나 인출할 수 있을까?</h3>
-<div class="two-col">
-  <div>
-    <div class="ctrl-row"><span class="ctrl-label">투자 원금</span><input type="range" id="s5p" min="50000000" max="500000000" step="10000000" value="100000000" oninput="s5update()"><span class="ctrl-val" id="s5pv">1억원</span></div>
-    <div class="ctrl-row"><span class="ctrl-label">연 수익률</span><input type="range" id="s5r" min="2" max="12" step="0.5" value="7" oninput="s5update()"><span class="ctrl-val" id="s5rv">7%</span></div>
-    <div class="ctrl-row"><span class="ctrl-label">인출률</span><input type="range" id="s5w" min="1" max="10" step="0.5" value="4" oninput="s5update()"><span class="ctrl-val" id="s5wv">4% 룰</span></div>
-    <div class="pension-result">
-      <div class="pension-monthly" id="s5monthly">—</div>
-      <div class="pension-note">월 인출액 (세전) &nbsp;<span id="s5status" style="font-size:0.9em;"></span></div>
-      <div style="font-size:0.58em;color:var(--muted);margin-top:6px;">세후(15.4% 배당세 적용) <strong id="s5net" style="color:var(--text);">—</strong></div>
+  <h2>03. 은퇴 연금 인출 전략</h2>
+  <div class="two-col">
+    <div>
+      <div class="ctrl-row"><span class="ctrl-label">은퇴 원금</span><input type="range" id="s5p" min="50000000" max="1000000000" step="10000000" value="500000000" oninput="s5update()"><span class="ctrl-val" id="s5pv">5억</span></div>
+      <div class="ctrl-row"><span class="ctrl-label">운용 수익률</span><input type="range" id="s5r" min="1" max="12" step="0.5" value="6" oninput="s5update()"><span class="ctrl-val" id="s5rv">6%</span></div>
+      <div class="ctrl-row"><span class="ctrl-label">연간 인출률</span><input type="range" id="s5w" min="1" max="10" step="0.5" value="4" oninput="s5update()"><span class="ctrl-val" id="s5wv">4%</span></div>
+      <div class="pension-result">
+        <div class="pension-monthly" id="s5monthly">—</div>
+        <div style="font-size:0.65em; color:var(--muted);">매월 세전 수령 가능 금액</div>
+      </div>
+      <div id="s5status" style="margin-top:10px; font-size:0.75em; font-weight:bold;"></div>
     </div>
-    <div class="highlight-box" id="s5msg">—</div>
-  </div>
-  <div>
-    <div class="chart-box" style="height:230px;position:relative;">
-      <div class="chart-title">30년 후 원금 변화</div>
+    <div class="chart-box">
+      <div class="chart-title">향후 30년 자산 잔액 추이</div>
       <canvas id="s5chart"></canvas>
     </div>
   </div>
-</div>
 </section>
 
 </div>
@@ -212,126 +150,148 @@ input[type=range] { flex: 1; accent-color: var(--teal); height: 4px; cursor: poi
 <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-Reveal.initialize({ hash: true, transition: 'fade', transitionSpeed: 'fast', controls: true, progress: true, center: false, width: 1100, height: 700, margin: 0 });
+// Reveal.js 초기화 - 화면 비율 및 화살표 설정 최적화
+Reveal.initialize({ 
+  hash: true, 
+  margin: 0.05,
+  minScale: 0.2,
+  maxScale: 2.0,
+  controls: true, 
+  controlsBackArrows: 'always', 
+  progress: true, 
+  center: false,
+  width: 1200, 
+  height: 800 
+});
 
 const charts = {};
+// 그래프 축 가독성 설정 (요청하신 대로 크게 유지)
+const commonOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: { legend: { labels: { color: '#e8eaf0', font: { size: 14 } } } },
+  scales: {
+    x: {
+      ticks: { color: '#7a7f9a', font: { size: 14 } },
+      grid: { color: 'rgba(255,255,255,0.05)' }
+    },
+    y: {
+      ticks: { 
+        color: '#7a7f9a', 
+        font: { size: 14 },
+        callback: v => v >= 100000000 ? (v/100000000).toFixed(1)+'억' : (v/10000).toLocaleString()+'만'
+      },
+      grid: { color: 'rgba(255,255,255,0.05)' }
+    }
+  }
+};
+
 function fmtM(v) {
-  if (v >= 100000000) return (v/100000000).toFixed(1)+'억';
-  if (v >= 10000000) return (v/10000000).toFixed(0)+'천만';
-  return Math.round(v/10000)+'만';
-}
-function fmtW(v) {
-  if (v >= 10000000) return (v/10000000).toFixed(1)+'천만원';
-  return Math.round(v/10000)+'만원';
+  if (v >= 100000000) return (v/100000000).toFixed(2)+'억원';
+  return (v/10000).toLocaleString()+'만원';
 }
 
-// === SLIDE 2 ===
 function s2update() {
   const P = +document.getElementById('s2p').value;
   const r = +document.getElementById('s2r').value / 100;
   const Y = +document.getElementById('s2y').value;
-  document.getElementById('s2pv').textContent = fmtM(P);
-  document.getElementById('s2rv').textContent = document.getElementById('s2r').value+'%';
+  document.getElementById('s2pv').textContent = (P/10000).toLocaleString()+'만';
+  document.getElementById('s2rv').textContent = (r*100).toFixed(1)+'%';
   document.getElementById('s2yv').textContent = Y+'년';
   const final = P * Math.pow(1+r, Y);
-  document.getElementById('s2final').textContent = fmtM(Math.round(final));
-  document.getElementById('s2gain').textContent = '+'+fmtM(Math.round(final-P));
-  document.getElementById('s2rule72').innerHTML = '72의 법칙: &nbsp;72 ÷ '+Math.round(r*100)+'% = <strong style="color:var(--teal-light)">'+(72/(r*100)).toFixed(1)+'년</strong>마다 원금이 2배';
-  const labels = Array.from({length:Y+1},(_,i)=>i===0?'시작':i+'년');
-  const compound = Array.from({length:Y+1},(_,i)=>Math.round(P*Math.pow(1+r,i)));
-  const simple = Array.from({length:Y+1},(_,i)=>Math.round(P*(1+r*i)));
+  document.getElementById('s2final').textContent = fmtM(final);
+  document.getElementById('s2rule72').innerHTML = `💡 <b>72의 법칙:</b> 원금이 2배가 되는 데 약 <span style="color:var(--teal)">${(72/(r*100)).toFixed(1)}년</span> 걸립니다.`;
+
+  const labels = Array.from({length:Y+1},(_,i)=>i+'년');
+  const data = labels.map((_,i)=>Math.round(P*Math.pow(1+r,i)));
+  const simple = labels.map((_,i)=>Math.round(P*(1+(r*i))));
+  
   if (charts.s2) charts.s2.destroy();
-  charts.s2 = new Chart(document.getElementById('s2chart').getContext('2d'), {
-    type:'line',
-    data:{ labels, datasets:[
-      {label:'복리',data:compound,borderColor:'#1D9E75',backgroundColor:'rgba(29,158,117,0.12)',fill:true,tension:0.3,pointRadius:0,borderWidth:2},
-      {label:'단리',data:simple,borderColor:'#EF9F27',borderDash:[5,4],tension:0,pointRadius:0,borderWidth:1.5}
-    ]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#7a7f9a',maxTicksLimit:7,font:{size:10}},grid:{color:'rgba(255,255,255,0.05)'}},y:{ticks:{color:'#7a7f9a',callback:v=>fmtM(v),font:{size:10}},grid:{color:'rgba(255,255,255,0.05)'}}}}
+  charts.s2 = new Chart(document.getElementById('s2chart'), {
+    type: 'line',
+    data: { labels, datasets: [
+      { label: '복리(Compound)', data, borderColor: '#1D9E75', backgroundColor: 'rgba(29,158,117,0.1)', fill: true, tension: 0.3 },
+      { label: '단리(Simple)', data: simple, borderColor: '#7a7f9a', borderDash: [5, 5], fill: false, tension: 0 }
+    ] },
+    options: commonOptions
   });
 }
-s2update();
 
-// === SLIDE 3: 연도 뱃지 ===
-const sp500 = {1995:37.58,1996:22.96,1997:33.36,1998:28.58,1999:21.04,2000:-9.10,2001:-11.89,2002:-22.10,2003:28.68,2004:10.88,2005:4.91,2006:15.79,2007:5.49,2008:-37.00,2009:26.46,2010:15.06,2011:2.11,2012:16.00,2013:32.39,2014:13.69,2015:1.38,2016:11.96,2017:21.83,2018:-4.38,2019:31.49,2020:18.40,2021:28.71,2022:-18.11,2023:26.29,2024:25.02};
-const grid = document.getElementById('yearBadges');
-Object.entries(sp500).forEach(([y,r])=>{
-  const d = document.createElement('div');
-  d.className = 'yr '+(r>=0?'up':'dn');
-  d.innerHTML = y.slice(2)+'<br>'+r.toFixed(0)+'%';
-  grid.appendChild(d);
-});
-
-// === SLIDE 4 ===
 function s4update() {
   const P = +document.getElementById('s4p').value;
+  const M = +document.getElementById('s4m').value;
   const r = +document.getElementById('s4r').value / 100;
   const Y = +document.getElementById('s4y').value;
-  const M = +document.getElementById('s4m').value;
-  const rm = r/12;
-  document.getElementById('s4pv').textContent = fmtM(P);
-  document.getElementById('s4rv').textContent = document.getElementById('s4r').value+'%';
+  document.getElementById('s4pv').textContent = (P/10000).toLocaleString()+'만';
+  document.getElementById('s4mv').textContent = (M/10000).toLocaleString()+'만';
+  document.getElementById('s4rv').textContent = (r*100).toFixed(1)+'%';
   document.getElementById('s4yv').textContent = Y+'년';
-  document.getElementById('s4mv').textContent = M===0?'없음':fmtW(M)+'/월';
-  const labels = Array.from({length:Y+1},(_,i)=>i===0?'시작':i+'년');
-  const compound=[], principal=[];
-  for(let y=0;y<=Y;y++){
-    const pg=P*Math.pow(1+r,y);
-    const n=y*12;
-    const mg=M>0&&n>0?M*((Math.pow(1+rm,n)-1)/rm):0;
-    compound.push(Math.round(pg+mg));
-    principal.push(Math.round(P+M*12*y));
+
+  let current = P;
+  const history = [P];
+  const principal = [P];
+  for(let i=1; i<=Y; i++) {
+    current = current * (1+r) + (M * 12);
+    history.push(Math.round(current));
+    principal.push(P + (M * 12 * i));
   }
-  const final=compound[Y], totalIn=principal[Y];
-  document.getElementById('s4final').textContent = fmtM(final);
-  document.getElementById('s4gain').textContent = '+'+fmtM(final-totalIn);
+  document.getElementById('s4final').textContent = fmtM(history[Y]);
+
   if (charts.s4) charts.s4.destroy();
-  charts.s4 = new Chart(document.getElementById('s4chart').getContext('2d'), {
-    type:'bar',
-    data:{ labels, datasets:[
-      {label:'복리 수익',data:compound.map((v,i)=>v-principal[i]),backgroundColor:'rgba(29,158,117,0.8)',stack:'s'},
-      {label:'납입 원금',data:principal,backgroundColor:'rgba(29,158,117,0.2)',stack:'s'}
-    ]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{stacked:true,ticks:{color:'#7a7f9a',maxTicksLimit:9,font:{size:10}},grid:{display:false}},y:{stacked:true,ticks:{color:'#7a7f9a',callback:v=>fmtM(v),font:{size:10}},grid:{color:'rgba(255,255,255,0.05)'}}}}
+  charts.s4 = new Chart(document.getElementById('s4chart'), {
+    type: 'bar',
+    data: { 
+      labels: Array.from({length:Y+1},(_,i)=>i+'년'),
+      datasets: [
+        { label: '투자 수익', data: history.map((v,i)=>v-principal[i]), backgroundColor: '#1D9E75' },
+        { label: '누적 원금', data: principal, backgroundColor: '#22263a' }
+      ]
+    },
+    options: { ...commonOptions, scales: { ...commonOptions.scales, x: { ...commonOptions.scales.x, stacked: true }, y: { ...commonOptions.scales.y, stacked: true } } }
   });
 }
-s4update();
 
-// === SLIDE 5 ===
 function s5update() {
   const P = +document.getElementById('s5p').value;
   const r = +document.getElementById('s5r').value / 100;
   const wr = +document.getElementById('s5w').value / 100;
-  document.getElementById('s5pv').textContent = fmtM(P);
-  document.getElementById('s5rv').textContent = document.getElementById('s5r').value+'%';
-  document.getElementById('s5wv').textContent = document.getElementById('s5w').value+'% 룰';
-  const monthly = P*wr/12;
-  document.getElementById('s5monthly').textContent = fmtW(monthly)+'/월';
-  document.getElementById('s5net').textContent = fmtW(monthly*0.846)+'/월';
-  const ok = r >= wr;
-  document.getElementById('s5status').textContent = ok ? '✅ 원금 보존' : '⚠️ 원금 감소';
-  document.getElementById('s5status').style.color = ok ? '#1D9E75' : '#EF9F27';
-  document.getElementById('s5msg').textContent = ok
-    ? `연 수익률(${(r*100).toFixed(0)}%)이 인출률(${(wr*100).toFixed(0)}%)보다 높아 원금이 유지됩니다. 잉여 수익 ${((r-wr)*100).toFixed(1)}%p는 재투자됩니다.`
-    : `인출률(${(wr*100).toFixed(0)}%)이 수익률(${(r*100).toFixed(0)}%)보다 높아 원금이 줄어듭니다. 인출률을 낮추거나 수익률을 높이세요.`;
-  const labels = Array.from({length:31},(_,i)=>i===0?'시작':i+'년');
-  let bal=P; const balData=[P];
-  for(let y=0;y<30;y++){bal=bal*(1+r)-P*wr; balData.push(Math.max(0,Math.round(bal)));}
-  const lineColor = ok ? '#1D9E75' : '#E24B4A';
-  const fillColor = ok ? 'rgba(29,158,117,0.12)' : 'rgba(226,75,74,0.08)';
+  document.getElementById('s5pv').textContent = P >= 100000000 ? (P/100000000).toFixed(1)+'억' : (P/10000).toLocaleString()+'만';
+  document.getElementById('s5rv').textContent = (r*100).toFixed(1)+'%';
+  document.getElementById('s5wv').textContent = (wr*100).toFixed(1)+'%';
+
+  const monthly = (P * wr) / 12;
+  document.getElementById('s5monthly').textContent = (Math.round(monthly/10000)).toLocaleString() + '만원';
+
+  let balance = P;
+  const history = [P];
+  for(let i=1; i<=30; i++) {
+    balance = (balance * (1+r)) - (P * wr);
+    history.push(Math.round(Math.max(0, balance)));
+  }
+
+  const isSafe = r >= wr;
+  const statusEl = document.getElementById('s5status');
+  statusEl.textContent = isSafe ? "✅ 원금이 보존되는 안전한 계획입니다." : "⚠️ 자산이 점차 고갈됩니다. 인출률을 낮추세요.";
+  statusEl.style.color = isSafe ? "var(--teal)" : "#E24B4A";
+
   if (charts.s5) charts.s5.destroy();
-  charts.s5 = new Chart(document.getElementById('s5chart').getContext('2d'), {
-    type:'line',
-    data:{ labels, datasets:[{label:'원금 잔액',data:balData,borderColor:lineColor,backgroundColor:fillColor,fill:true,tension:0.3,pointRadius:0,borderWidth:2}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmtM(c.raw)}}},scales:{x:{ticks:{color:'#7a7f9a',maxTicksLimit:8,font:{size:10}},grid:{display:false}},y:{min:0,ticks:{color:'#7a7f9a',callback:v=>fmtM(v),font:{size:10}},grid:{color:'rgba(255,255,255,0.05)'}}}}
+  charts.s5 = new Chart(document.getElementById('s5chart'), {
+    type: 'line',
+    data: { 
+      labels: Array.from({length:31},(_,i)=>i+'년'),
+      datasets: [{ label: '자산 잔액', data: history, borderColor: isSafe ? '#1D9E75' : '#E24B4A', borderWidth: 3, pointRadius: 0, fill: true, backgroundColor: isSafe ? 'rgba(29,158,117,0.05)' : 'rgba(226,75,74,0.05)' }] 
+    },
+    options: commonOptions
   });
 }
-s5update();
 
-// 슬라이드 전환 시 차트 리사이즈
+// 초기 실행 및 리사이즈 이벤트
+s2update(); s4update(); s5update();
+window.addEventListener('resize', () => {
+  Object.values(charts).forEach(c => c && c.resize());
+});
 Reveal.on('slidechanged', () => {
   Object.values(charts).forEach(c => c && c.resize());
-  setTimeout(()=>Object.values(charts).forEach(c=>c&&c.resize()),300);
 });
 </script>
 </body>
