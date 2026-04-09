@@ -1,333 +1,241 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>복리의 마법 & 은퇴 설계 시뮬레이션</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/theme/black.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-<style>
-:root {
-  --primary: #2DD4BF;
-  --bg-deep: #020617;
-  --bg-card: #1e293b;
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --accent: #FB923C;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>투자 시뮬레이터 | 복리의 마법 & 은퇴 설계</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+    <style>
+        :root {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --primary: #10b981; /* 에메랄드 그린 */
+            --primary-light: #34d399;
+            --secondary: #3b82f6; /* 블루 */
+            --accent: #f59e0b; /* 앰버 */
+            --danger: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
+        }
 
-body { font-family: 'Pretendard', sans-serif; background-color: var(--bg-deep); }
-.reveal { background-color: var(--bg-deep); }
-.reveal .slides section { text-align: left; padding: 20px; box-sizing: border-box; }
+        /* 공통 스타일 */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
 
-/* 텍스트 밸런스 조정 */
-.reveal h1 { font-size: 2.2em; font-weight: 800; color: var(--text-main); margin-bottom: 20px; }
-.reveal h2 { font-size: 1.6em; font-weight: 700; color: var(--primary); margin-bottom: 15px; border-left: 6px solid var(--primary); padding-left: 15px; }
+        /* 헤더 */
+        header {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 20px 5%;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 { font-size: 1.4rem; font-weight: 800; color: var(--primary); }
+        header p { font-size: 0.9rem; color: var(--text-muted); }
 
-/* 대시보드 구조 */
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: 400px 1fr;
-  gap: 30px;
-  align-items: stretch;
-}
+        /* 컨테이너 */
+        main {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
 
-@media (max-width: 1000px) {
-  .dashboard-grid { grid-template-columns: 1fr; }
-  .chart-container { height: 350px !important; }
-}
+        /* 섹션 스타일 */
+        section {
+            margin-bottom: 80px;
+            animation: fadeIn 0.8s ease-out;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-/* 카드 UI */
-.card {
-  background: var(--bg-card);
-  border-radius: 24px;
-  padding: 30px;
-  border: 1px solid rgba(255,255,255,0.05);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
+        .section-title {
+            margin-bottom: 30px;
+        }
+        .section-title h2 { font-size: 2rem; font-weight: 800; margin-bottom: 8px; }
+        .section-title p { color: var(--text-muted); font-size: 1.1rem; }
 
-.control-group { margin-bottom: 25px; }
-.label-row { display: flex; justify-content: space-between; margin-bottom: 10px; }
-.label-text { font-size: 1rem; color: var(--text-muted); font-weight: 600; }
-.label-value { font-family: 'JetBrains Mono', monospace; font-size: 1.2rem; color: var(--primary); font-weight: 800; }
+        /* 대시보드 레이아웃 */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 24px;
+        }
 
-input[type=range] {
-  width: 100%;
-  height: 10px;
-  background: #334155;
-  border-radius: 10px;
-  appearance: none;
-  accent-color: var(--primary);
-}
+        /* 카드 공통 스타일 */
+        .card {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 32px;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+        }
 
-.summary-box {
-  background: rgba(45, 212, 191, 0.08);
-  border-radius: 20px;
-  padding: 20px;
-  margin-top: 10px;
-}
-.summary-label { font-size: 0.9rem; color: var(--text-muted); font-weight: 600; margin-bottom: 8px; }
-.summary-value { font-size: 2.2rem; font-weight: 800; color: var(--text-main); font-family: 'JetBrains Mono', monospace; }
+        /* 조작 패널 */
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+        .control-item { display: flex; flex-direction: column; gap: 12px; }
+        .label-row { display: flex; justify-content: space-between; align-items: flex-end; }
+        .label-text { font-size: 0.95rem; font-weight: 600; color: var(--text-muted); }
+        .label-value { font-family: 'JetBrains Mono', monospace; font-size: 1.2rem; font-weight: 700; color: var(--primary); }
 
-/* 차트 컨테이너 - 높이 확보 */
-.chart-container {
-  position: relative;
-  width: 100%;
-  height: 550px; 
-  background: var(--bg-card);
-  border-radius: 24px;
-  padding: 30px;
-  box-sizing: border-box;
-}
+        /* 슬라이더 스타일 커스텀 */
+        input[type=range] {
+            width: 100%; height: 6px; background: #334155; border-radius: 10px;
+            appearance: none; cursor: pointer; transition: 0.2s;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            appearance: none; width: 20px; height: 20px; background: var(--primary);
+            border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
 
-.reveal .controls { color: var(--primary); }
-</style>
+        /* 요약 지표 */
+        .stat-card {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            padding: 20px;
+            border-radius: 16px;
+            margin-top: 10px;
+        }
+        .stat-label { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+        .stat-value { font-family: 'JetBrains Mono', monospace; font-size: 1.8rem; font-weight: 800; color: var(--text-main); }
+
+        /* 차트 영역 */
+        .chart-area {
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .chart-header h3 { font-size: 1rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+        .chart-wrapper { flex-grow: 1; position: relative; width: 100%; height: 100%; }
+
+        /* 모바일 대응 */
+        @media (max-width: 1024px) {
+            .dashboard { grid-template-columns: 1fr; }
+            .chart-area { min-height: 400px; }
+            .section-title h2 { font-size: 1.6rem; }
+            header h1 { font-size: 1.2rem; }
+        }
+
+        footer { text-align: center; padding: 60px 0; color: var(--text-muted); font-size: 0.9rem; border-top: 1px solid var(--border); }
+    </style>
 </head>
 <body>
-<div class="reveal">
-<div class="slides">
 
-<section>
-  <div style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
-    <h1>복리의 마법과<br><span style="color:var(--primary);">은퇴 자산 설계</span></h1>
-    <p style="color:var(--text-muted); font-size:1.2em;">화면 크기에 상관없이 최적화된 시각화 리포트</p>
-  </div>
-</section>
+    <header>
+        <div>
+            <h1>INVESTMENT LAB</h1>
+            <p>Smart Financial Simulation</p>
+        </div>
+        <div style="font-size: 0.8rem; color: var(--primary); font-weight: 600; letter-spacing: 0.1em;">v2.0 WEBPAGE MODE</div>
+    </header>
 
-<section>
-  <h2>01. 거치식 복리의 위력</h2>
-  <div class="dashboard-grid">
-    <div class="card">
-      <div class="control-group">
-        <div class="label-row"><span class="label-text">초기 원금</span><span class="label-value" id="s1pv">2,500만</span></div>
-        <input type="range" id="s1p" min="1000000" max="100000000" step="1000000" value="25000000" oninput="updateS1()">
-      </div>
-      <div class="control-group">
-        <div class="label-row"><span class="label-text">연 수익률</span><span class="label-value" id="s1rv">7.0%</span></div>
-        <input type="range" id="s1r" min="1" max="15" step="0.5" value="7" oninput="updateS1()">
-      </div>
-      <div class="control-group">
-        <div class="label-row"><span class="label-text">기간 (년)</span><span class="label-value" id="s1yv">20년</span></div>
-        <input type="range" id="s1y" min="1" max="40" step="1" value="20" oninput="updateS1()">
-      </div>
-      <div class="summary-box">
-        <div class="summary-label">최종 예상 자산</div>
-        <div class="summary-value" id="s1result">—</div>
-      </div>
-    </div>
-    <div class="chart-container">
-      <canvas id="chartS1"></canvas>
-    </div>
-  </div>
-</section>
+    <main>
+        <section id="compound">
+            <div class="section-title">
+                <h2>01. 거치식 복리의 위력</h2>
+                <p>초기 투자금이 시간이 지남에 따라 어떻게 기하급수적으로 불어나는지 확인하세요.</p>
+            </div>
+            <div class="dashboard">
+                <div class="card controls">
+                    <div class="control-item">
+                        <div class="label-row"><span class="label-text">초기 원금</span><span class="label-value" id="s1p-v">2,500만</span></div>
+                        <input type="range" id="s1p" min="1000000" max="100000000" step="1000000" value="25000000">
+                    </div>
+                    <div class="control-item">
+                        <div class="label-row"><span class="label-text">연 수익률</span><span class="label-value" id="s1r-v">7.0%</span></div>
+                        <input type="range" id="s1r" min="1" max="20" step="0.5" value="7">
+                    </div>
+                    <div class="control-item">
+                        <div class="label-row"><span class="label-text">투자기간</span><span class="label-value" id="s1y-v">20년</span></div>
+                        <input type="range" id="s1y" min="1" max="50" step="1" value="20">
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">20년 후 최종 자산</div>
+                        <div class="stat-value" id="s1-res">—</div>
+                    </div>
+                </div>
+                <div class="card chart-area">
+                    <div class="chart-header"><h3>자산 성장 시각화</h3></div>
+                    <div class="chart-wrapper"><canvas id="chart1"></canvas></div>
+                </div>
+            </div>
+        </section>
 
-<section>
-  <h2>02. 매월 적립식 투자</h2>
-  <div class="dashboard-grid">
-    <div class="card">
-      <div class="control-group">
-        <div class="label-row"><span class="label-text">매월 적립금</span><span class="label-value" id="s2mv">100만</span></div>
-        <input type="range" id="s2m" min="100000" max="5000000" step="100000" value="1000000" oninput="updateS2()">
-      </div>
-      <div class="control-group">
-        <div class="label-row"><span class="label-text">연 수익률</span><span class="label-value" id="s2rv">8.0%</span></div>
-        <input type="range" id="s2r" min="1" max="15" step="0.5" value="8" oninput="updateS2()">
-      </div>
-      <div class="control-group">
-        <div class="label-row"><span class="label-text">기간 (년)</span><span class="label-value" id="s2yv">15년</span></div>
-        <input type="range" id="s2y" min="1" max="30" step="1" value="15" oninput="updateS2()">
-      </div>
-      <div class="summary-box">
-        <div class="summary-label">최종 예상 목돈</div>
-        <div class="summary-value" id="s2result">—</div>
-      </div>
-    </div>
-    <div class="chart-container">
-      <canvas id="chartS2"></canvas>
-    </div>
-  </div>
-</section>
+        <section id="monthly">
+            <div class="section-title">
+                <h2>02. 매월 적립식 투자</h2>
+                <p>일정한 금액을 꾸준히 투자했을 때, 원금과 수익의 비중 변화를 비교합니다.</p>
+            </div>
+            <div class="dashboard">
+                <div class="card controls">
+                    <div class="control-item">
+                        <div class="label-row"><span class="label-text">매월 적립액</span><span class="label-value" id="s2m-v">100만</span></div>
+                        <input type="range" id="s2m" min="100000" max="10000000" step="100000" value="1000000">
+                    </div>
+                    <div class="control-item">
+                        <div class="label-row"><span class="label-text">기대 수익률</span><span class="label-value" id="s2r-v">8.0%</span></div>
+                        <input type="range" id="s2r" min="1" max="20" step="0.5" value="8">
+                    </div>
+                    <div class="control-item">
+                        <div class="label-row"><span class="label-text">적립 기간</span><span class="label-value" id="s2y-v">15년</span></div>
+                        <input type="range" id="s2y" min="1" max="40" step="1" value="15">
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">최종 목표 목돈</div>
+                        <div class="stat-value" id="s2-res">—</div>
+                    </div>
+                </div>
+                <div class="card chart-area">
+                    <div class="chart-header"><h3>원금 대비 수익 비중</h3></div>
+                    <div class="chart-wrapper"><canvas id="chart2"></canvas></div>
+                </div>
+            </div>
+        </section>
 
-<section>
-  <h2>03. 은퇴 연금 인출 전략</h2>
-  <div class="dashboard-grid">
-    <div class="card">
-      <div class="control-group">
-        <div class="label-row"><span class="label-text">은퇴 시점 원금</span><span class="label-value" id="s3pv">5억</span></div>
-        <input type="range" id="s3p" min="50000000" max="1000000000" step="10000000" value="500000000" oninput="updateS3()">
-      </div>
-      <div class="control-group">
-        <div class="label-row"><span class="label-text">운용 수익률</span><span class="label-value" id="s3rv">5.0%</span></div>
-        <input type="range" id="s3r" min="1" max="12" step="0.5" value="5" oninput="updateS3()">
-      </div>
-      <div class="control-group">
-        <div class="label-row"><span class="label-text">연 인출률</span><span class="label-value" id="s3wv">4.0%</span></div>
-        <input type="range" id="s3w" min="1" max="10" step="0.5" value="4" oninput="updateS3()">
-      </div>
-      <div class="summary-box">
-        <div class="summary-label">매월 세전 수령액</div>
-        <div class="summary-value" id="s3result" style="color:var(--accent);">—</div>
-      </div>
-    </div>
-    <div class="chart-container">
-      <canvas id="chartS3"></canvas>
-    </div>
-  </div>
-</section>
-
-</div>
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<script>
-// Reveal.js 설정 - 스케일 감도를 조절하여 텍스트 비대화 방지
-Reveal.initialize({
-  hash: true,
-  controls: true,
-  progress: true,
-  center: false,
-  width: 1400, // 기본 폭을 넓혀서 가로형 배치 최적화
-  height: 900,
-  margin: 0.05,
-  minScale: 0.5,
-  maxScale: 1.2, // 너무 커지지 않도록 제한
-  controlsBackArrows: 'always'
-});
-
-const charts = {};
-
-// 그래프 시인성 극대화 설정 (20px 이상의 굵은 폰트)
-const getChartOptions = () => ({
-  responsive: true,
-  maintainAspectRatio: false,
-  devicePixelRatio: 2, // 고해상도 유지
-  plugins: {
-    legend: { 
-      labels: { 
-        color: '#f8fafc', 
-        font: { size: 20, weight: '700', family: 'Pretendard' },
-        padding: 20
-      } 
-    },
-    tooltip: { bodyFont: { size: 18 } }
-  },
-  scales: {
-    x: { 
-      ticks: { 
-        color: '#f8fafc', 
-        font: { size: 18, weight: '600' }
-      }, 
-      grid: { display: false } 
-    },
-    y: { 
-      ticks: { 
-        color: '#f8fafc', 
-        font: { size: 18, weight: '600' }, 
-        callback: v => v >= 100000000 ? (v/100000000).toFixed(1) + '억' : (v/10000).toLocaleString() + '만'
-      },
-      grid: { color: 'rgba(255,255,255,0.1)' }
-    }
-  }
-});
-
-const fmtK = v => (v/10000).toLocaleString() + '만';
-const fmtWon = v => v >= 100000000 ? (v/100000000).toFixed(2) + '억 원' : (v/10000).toLocaleString() + '만 원';
-
-function updateS1() {
-  const p = +document.getElementById('s1p').value;
-  const r = +document.getElementById('s1r').value / 100;
-  const y = +document.getElementById('s1y').value;
-  document.getElementById('s1pv').textContent = fmtK(p);
-  document.getElementById('s1rv').textContent = (r*100).toFixed(1) + '%';
-  document.getElementById('s1yv').textContent = y + '년';
-
-  const labels = Array.from({length: y + 1}, (_, i) => i + '년');
-  const compound = labels.map((_, i) => Math.round(p * Math.pow(1 + r, i)));
-  document.getElementById('s1result').textContent = fmtWon(compound[y]);
-
-  if (charts.s1) charts.s1.destroy();
-  charts.s1 = new Chart(document.getElementById('chartS1'), {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [{ label: '복리 자산 추이', data: compound, borderColor: '#2DD4BF', backgroundColor: 'rgba(45, 212, 191, 0.2)', fill: true, tension: 0.4, borderWidth: 5, pointRadius: 0 }]
-    },
-    options: getChartOptions()
-  });
-}
-
-function updateS2() {
-  const m = +document.getElementById('s2m').value;
-  const r = +document.getElementById('s2r').value / 100;
-  const y = +document.getElementById('s2y').value;
-  document.getElementById('s2mv').textContent = fmtK(m);
-  document.getElementById('s2rv').textContent = (r*100).toFixed(1) + '%';
-  document.getElementById('s2yv').textContent = y + '년';
-
-  let total = 0;
-  const history = [0];
-  const principal = [0];
-  for(let i=1; i<=y; i++) {
-    total = (total + (m * 12)) * (1 + r);
-    history.push(Math.round(total));
-    principal.push(m * 12 * i);
-  }
-  document.getElementById('s2result').textContent = fmtWon(history[y]);
-
-  if (charts.s2) charts.s2.destroy();
-  charts.s2 = new Chart(document.getElementById('chartS2'), {
-    type: 'bar',
-    data: {
-      labels: Array.from({length: y + 1}, (_, i) => i + '년'),
-      datasets: [
-        { label: '투자 수익', data: history.map((v, i) => v - principal[i]), backgroundColor: '#2DD4BF' },
-        { label: '납입 원금', data: principal, backgroundColor: '#475569' }
-      ]
-    },
-    options: { ...getChartOptions(), scales: { ...getChartOptions().scales, x: { ...getChartOptions().scales.x, stacked: true }, y: { ...getChartOptions().scales.y, stacked: true } } }
-  });
-}
-
-function updateS3() {
-  const p = +document.getElementById('s3p').value;
-  const r = +document.getElementById('s3r').value / 100;
-  const w = +document.getElementById('s3w').value / 100;
-  document.getElementById('s3pv').textContent = p >= 100000000 ? (p/100000000).toFixed(1) + '억' : fmtK(p);
-  document.getElementById('s3rv').textContent = (r*100).toFixed(1) + '%';
-  document.getElementById('s3wv').textContent = (w*100).toFixed(1) + '%';
-
-  const monthly = (p * w) / 12;
-  document.getElementById('s3result').textContent = (Math.round(monthly/10000)).toLocaleString() + '만 원';
-
-  let balance = p;
-  const history = [p];
-  for(let i=1; i<=30; i++) {
-    balance = (balance * (1 + r)) - (p * w);
-    history.push(Math.round(Math.max(0, balance)));
-  }
-
-  if (charts.s3) charts.s3.destroy();
-  charts.s3 = new Chart(document.getElementById('chartS3'), {
-    type: 'line',
-    data: {
-      labels: Array.from({length: 31}, (_, i) => i + '년'),
-      datasets: [{ label: '자산 잔액', data: history, borderColor: r>=w ? '#2DD4BF' : '#F87171', backgroundColor: r>=w ? 'rgba(45, 212, 191, 0.1)' : 'rgba(248, 113, 113, 0.1)', fill: true, tension: 0.3, pointRadius: 0, borderWidth: 5 }]
-    },
-    options: getChartOptions()
-  });
-}
-
-updateS1(); updateS2(); updateS3();
-window.addEventListener('resize', () => {
-  Object.values(charts).forEach(c => c && c.resize());
-});
-Reveal.on('slidechanged', () => {
-  setTimeout(() => Object.values(charts).forEach(c => c && c.resize()), 200);
-});
-</script>
-</body>
-</html>
+        <section id="retirement">
+            <div class="section-title">
+                <h2>03. 은퇴 연금 인출 전략</h2>
+                <p>원금을 고갈시키지 않으면서 매달 안전하게 인출할 수 있는 금액을 시뮬레이션합니다.</p>
+            </div>
+            <div class="dashboard">
+                <div class="card controls">
+                    <div class="control-item">
+                        <div class="label-row"><span class="label-text">은퇴 시점 원금</span><span class="label-value" id="s3p-v">5억</span></div>
+                        <input type="range" id="s3p" min="50000000" max="2000000000" step="10000000" value="500000000">
+                    </div>
+                    <div class="control-item">
+                        <div class="label-row"><span class="label-text">자산 운용 수익률</span><span class="label-value" id="s3r-v">5.0%</span></div>
+                        <input type="range" id="s3r" min="1" max="15" step="0.5" value="5">
+                    </div>
+                    <div class="control-item">
+                        <div class="label-row"><span class="label-text">연간 인출률</span><span class="label-value" id="s3w-v">4.0%</span></div>
+                        <input type="range" id="s3w" min="1" max="12" step="0.5" value="4">
+                    </div>
+                    <div class="stat-card" style="background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.2);">
+                        <div class="stat-label" style="color: var(--secondary);">매월 세전 수령액</div>
+                        <div class="stat-value" id="s3-res" style="color: var(--secondary);">—</div>
+                    </div>
+                </div>
+                <div class="card chart-area">
+                    <div class="chart-header"><h3>향후 30년 자산 잔액 추이</h3></div>
+                    <div class="chart-wrapper"><canvas id="chart3"></canvas></div>
+                </div>
+            </div>
+        </section>
+    </main>
