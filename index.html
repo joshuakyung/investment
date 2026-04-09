@@ -134,4 +134,250 @@
     <main>
         <section>
             <div class="section-title">
-                <h2>01
+                <h2>01. 거치식 복리 시뮬레이션</h2>
+                <p>초기 투자금이 시간이 흐름에 따라 어떻게 불어나는지 확인하세요.</p>
+            </div>
+            <div class="dashboard">
+                <div class="card controls">
+                    <div class="control-item">
+                        <div class="label-row"><span class="label-text">초기 원금</span><span class="label-value" id="s1p-v">2,500만</span></div>
+                        <input type="range" id="s1p" min="1000000" max="100000000" step="1000000" value="25000000">
+                    </div>
+                    <div class="control-item">
+                        <div class="label-row"><span class="label-text">연 수익률</span><span class="label-value" id="s1r-v">7.0%</span></div>
+                        <input type="range" id="s1r" min="1" max="20" step="0.5" value="7">
+                    </div>
+                    <div class="control-item">
+                        <div class="label-row"><span class="label-text">투자기간</span><span class="label-value" id="s1y-v">20년</span></div>
+                        <input type="range" id="s1y" min="1" max="50" step="1" value="20">
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">최종 예상 자산</div>
+                        <div class="stat-value" id="s1-res">—</div>
+                    </div>
+                </div>
+                <div class="card chart-area">
+                    <div class="chart-wrapper"><canvas id="chart1"></canvas></div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="section-title">
+                <h2>02. 매월 적립식 투자</h2>
+                <p>꾸준한 저축이 만드는 복리의 마법을 시각화합니다.</p>
+            </div>
+            <div class="dashboard">
+                <div class="card controls">
+                    <div class="control-item">
+                        <div class="label-row"><span class="label-text">매월 적립액</span><span class="label-value" id="s2m-v">100만</span></div>
+                        <input type="range" id="s2m" min="100000" max="5000000" step="100000" value="1000000">
+                    </div>
+                    <div class="control-item">
+                        <div class="label-row"><span class="label-text">기대 수익률</span><span class="label-value" id="s2r-v">8.0%</span></div>
+                        <input type="range" id="s2r" min="1" max="20" step="0.5" value="8">
+                    </div>
+                    <div class="control-item">
+                        <div class="label-row"><span class="label-text">적립 기간</span><span class="label-value" id="s2y-v">15년</span></div>
+                        <input type="range" id="s2y" min="1" max="40" step="1" value="15">
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">최종 목표 목돈</div>
+                        <div class="stat-value" id="s2-res">—</div>
+                    </div>
+                </div>
+                <div class="card chart-area">
+                    <div class="chart-wrapper"><canvas id="chart2"></canvas></div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="section-title">
+                <h2>03. 은퇴 연금 인출 전략</h2>
+                <p>원금을 지키며 매달 인출 가능한 금액을 설계하세요.</p>
+            </div>
+            <div class="dashboard">
+                <div class="card controls">
+                    <div class="control-item">
+                        <div class="label-row"><span class="label-text">은퇴 시점 자산</span><span class="label-value" id="s3p-v">5억</span></div>
+                        <input type="range" id="s3p" min="50000000" max="2000000000" step="10000000" value="500000000">
+                    </div>
+                    <div class="control-item">
+                        <div class="label-row"><span class="label-text">운용 수익률</span><span class="label-value" id="s3r-v">5.0%</span></div>
+                        <input type="range" id="s3r" min="1" max="15" step="0.5" value="5">
+                    </div>
+                    <div class="control-item">
+                        <div class="label-row"><span class="label-text">연 인출률</span><span class="label-value" id="s3w-v">4.0%</span></div>
+                        <input type="range" id="s3w" min="1" max="12" step="0.5" value="4">
+                    </div>
+                    <div class="stat-card" style="background: rgba(59, 130, 246, 0.08); border-color: rgba(59, 130, 246, 0.2);">
+                        <div class="stat-label" style="color: var(--secondary);">매월 세전 수령액</div>
+                        <div class="stat-value" id="s3-res" style="color: var(--secondary);">—</div>
+                    </div>
+                </div>
+                <div class="card chart-area">
+                    <div class="chart-wrapper"><canvas id="chart3"></canvas></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2026 Interactive Investment Lab. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        // 공통 포맷 설정
+        const fmtWon = v => v >= 100000000 ? (v/100000000).toFixed(2) + '억 원' : (v/10000).toLocaleString() + '만 원';
+        const fmtK = v => (v/10000).toLocaleString() + '만';
+
+        // 차트 기본 폰트 설정
+        Chart.defaults.color = '#94a3b8';
+        Chart.defaults.font.family = 'Pretendard';
+        Chart.defaults.font.size = window.innerWidth < 600 ? 12 : 14;
+
+        const charts = {};
+
+        // 차트 생성 범용 함수
+        function createChart(id, type, data, options = {}) {
+            const ctx = document.getElementById(id).getContext('2d');
+            if (charts[id]) charts[id].destroy(); // 기존 차트 파괴 후 재생성
+            charts[id] = new Chart(ctx, {
+                type: type,
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'top', labels: { font: { weight: '600' }, color: '#f8fafc' } } },
+                    scales: {
+                        y: { ticks: { callback: v => v >= 100000000 ? (v/100000000).toFixed(1) + '억' : (v/10000).toLocaleString() + '만' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                        x: { grid: { display: false } }
+                    },
+                    ...options
+                }
+            });
+        }
+
+        // 01. 거치식 업데이트 로직
+        function updateS1() {
+            const p = +document.getElementById('s1p').value;
+            const r = +document.getElementById('s1r').value / 100;
+            const y = +document.getElementById('s1y').value;
+
+            // 숫자 업데이트
+            document.getElementById('s1p-v').textContent = fmtK(p);
+            document.getElementById('s1r-v').textContent = (r*100).toFixed(1) + '%';
+            document.getElementById('s1y-v').textContent = y + '년';
+
+            const labels = Array.from({length: y + 1}, (_, i) => i + '년');
+            const data = labels.map((_, i) => Math.round(p * Math.pow(1 + r, i)));
+            
+            document.getElementById('s1-res').textContent = fmtWon(data[y]);
+
+            createChart('chart1', 'line', {
+                labels,
+                datasets: [{
+                    label: '자산 성장',
+                    data: data,
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 4,
+                    pointRadius: 0
+                }]
+            });
+        }
+
+        // 02. 적립식 업데이트 로직
+        function updateS2() {
+            const m = +document.getElementById('s2m').value;
+            const r = +document.getElementById('s2r').value / 100;
+            const y = +document.getElementById('s2y').value;
+
+            // ID 이름의 하이픈 확인 완료
+            document.getElementById('s2m-v').textContent = fmtK(m);
+            document.getElementById('s2r-v').textContent = (r*100).toFixed(1) + '%';
+            document.getElementById('s2y-v').textContent = y + '년';
+
+            let total = 0;
+            const history = [0];
+            const principal = [0];
+            for(let i=1; i<=y; i++) {
+                total = (total + (m * 12)) * (1 + r);
+                history.push(Math.round(total));
+                principal.push(m * 12 * i);
+            }
+
+            document.getElementById('s2-res').textContent = fmtWon(history[y]);
+
+            createChart('chart2', 'bar', {
+                labels: Array.from({length: y + 1}, (_, i) => i + '년'),
+                datasets: [
+                    { label: '투자 수익', data: history.map((v, i) => v - principal[i]), backgroundColor: '#10b981' },
+                    { label: '누적 원금', data: principal, backgroundColor: '#334155' }
+                ]
+            }, { scales: { x: { stacked: true }, y: { stacked: true, ticks: { callback: v => v >= 100000000 ? (v/100000000).toFixed(1) + '억' : (v/10000).toLocaleString() + '만' } } } });
+        }
+
+        // 03. 은퇴 설계 업데이트 로직
+        function updateS3() {
+            const p = +document.getElementById('s3p').value;
+            const r = +document.getElementById('s3r').value / 100;
+            const w = +document.getElementById('s3w').value / 100;
+
+            document.getElementById('s3p-v').textContent = p >= 100000000 ? (p/100000000).toFixed(1) + '억' : fmtK(p);
+            document.getElementById('s3r-v').textContent = (r*100).toFixed(1) + '%';
+            document.getElementById('s3w-v').textContent = (w*100).toFixed(1) + '%';
+
+            const monthly = (p * w) / 12;
+            document.getElementById('s3-res').textContent = (Math.round(monthly/10000)).toLocaleString() + '만 원';
+
+            let balance = p;
+            const history = [p];
+            for(let i=1; i<=30; i++) {
+                balance = (balance * (1 + r)) - (p * w);
+                history.push(Math.round(Math.max(0, balance)));
+            }
+
+            createChart('chart3', 'line', {
+                labels: Array.from({length: 31}, (_, i) => i + '년'),
+                datasets: [{
+                    label: '자산 잔액',
+                    data: history,
+                    borderColor: r >= w ? '#3b82f6' : '#ef4444',
+                    backgroundColor: r >= w ? 'rgba(59, 130, 246, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    borderWidth: 4,
+                    pointRadius: 0
+                }]
+            });
+        }
+
+        // 모든 슬라이더에 이벤트 리스너 통합 연결
+        document.querySelectorAll('input[type=range]').forEach(input => {
+            input.addEventListener('input', () => {
+                const id = input.id;
+                if(id.startsWith('s1')) updateS1();
+                if(id.startsWith('s2')) updateS2();
+                if(id.startsWith('s3')) updateS3();
+            });
+        });
+
+        // 초기 화면 렌더링
+        window.onload = () => {
+            updateS1();
+            updateS2();
+            updateS3();
+        };
+
+        // 화면 크기 변경 시 차트 폰트 최적화
+        window.addEventListener('resize', () => {
+            Chart.defaults.font.size = window.innerWidth < 600 ? 12 : 14;
+            Object.values(charts).forEach(c => c && c.update());
+        });
+    </script>
+</body>
+</html>
