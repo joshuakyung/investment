@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>투자 시뮬레이터 v3.0 | 반응형 대시보드</title>
+    <title>투자 시뮬레이터 v3.1 | 완벽한 반응형 & 인터액티브</title>
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
     <style>
@@ -12,6 +12,7 @@
             --bg-card: #1e293b;
             --primary: #10b981;
             --secondary: #3b82f6;
+            --accent: #f59e0b;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --border: rgba(255, 255, 255, 0.1);
@@ -23,7 +24,7 @@
             font-family: 'Pretendard', sans-serif;
             background-color: var(--bg-body);
             color: var(--text-main);
-            overflow-x: hidden; /* 가로 스크롤 방지 */
+            overflow-x: hidden;
             width: 100%;
         }
 
@@ -37,7 +38,7 @@
             border-bottom: 1px solid var(--border);
             text-align: center;
         }
-        header h1 { font-size: 1.1rem; color: var(--primary); font-weight: 800; }
+        header h1 { font-size: 1.1rem; color: var(--primary); font-weight: 800; letter-spacing: 0.05em; }
 
         main {
             width: 100%;
@@ -46,13 +47,13 @@
             padding: 20px;
         }
 
-        section { margin-bottom: 50px; }
+        section { margin-bottom: 60px; }
 
-        .section-title { margin-bottom: 20px; }
-        .section-title h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 5px; }
-        .section-title p { color: var(--text-muted); font-size: 0.9rem; }
+        .section-title { margin-bottom: 25px; }
+        .section-title h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 5px; color: var(--text-main); }
+        .section-title p { color: var(--text-muted); font-size: 0.95rem; }
 
-        /* 대시보드 레이아웃: 기본은 세로 쌓기(모바일), 1024px 이상에서 가로 배치 */
+        /* 대시보드 구조 (모바일: 세로 / PC: 가로) */
         .dashboard {
             display: flex;
             flex-direction: column;
@@ -62,114 +63,75 @@
         @media (min-width: 1024px) {
             .dashboard {
                 display: grid;
-                grid-template-columns: 380px 1fr;
-                align-items: start;
+                grid-template-columns: 400px 1fr;
+                align-items: stretch;
             }
         }
 
+        /* 카드 UI */
         .card {
             background: var(--bg-card);
-            border-radius: 20px;
+            border-radius: 24px;
             padding: 25px;
             border: 1px solid var(--border);
             width: 100%;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
         }
 
-        .controls { display: flex; flex-direction: column; gap: 20px; }
-        .control-item { display: flex; flex-direction: column; gap: 10px; }
+        .controls { display: flex; flex-direction: column; gap: 25px; }
+        .control-item { display: flex; flex-direction: column; gap: 12px; }
         .label-row { display: flex; justify-content: space-between; align-items: center; }
-        .label-text { font-size: 0.9rem; font-weight: 600; color: var(--text-muted); }
-        .label-value { font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; font-weight: 700; color: var(--primary); }
+        .label-text { font-size: 0.95rem; font-weight: 600; color: var(--text-muted); }
+        .label-value { font-family: 'JetBrains Mono', monospace; font-size: 1.2rem; font-weight: 700; color: var(--primary); }
 
+        /* 슬라이더 스타일 */
         input[type=range] {
             width: 100%; height: 8px; background: #334155; border-radius: 10px;
             appearance: none; cursor: pointer;
         }
         input[type=range]::-webkit-slider-thumb {
             appearance: none; width: 24px; height: 24px; background: var(--primary);
-            border-radius: 50%; border: 3px solid #fff;
+            border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
 
+        /* 요약 지표 */
         .stat-card {
-            background: rgba(16, 185, 129, 0.1);
+            background: rgba(16, 185, 129, 0.08);
             border: 1px solid rgba(16, 185, 129, 0.2);
-            padding: 15px;
-            border-radius: 15px;
+            padding: 20px;
+            border-radius: 18px;
             margin-top: 10px;
         }
-        .stat-label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px; }
-        .stat-value { font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; font-weight: 800; }
+        .stat-label { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
+        .stat-value { font-family: 'JetBrains Mono', monospace; font-size: 1.8rem; font-weight: 800; color: var(--text-main); line-height: 1.2; }
 
         /* 차트 영역 */
         .chart-area {
-            min-height: 350px;
+            min-height: 400px;
             display: flex;
             flex-direction: column;
+            justify-content: center;
         }
         @media (min-width: 1024px) {
-            .chart-area { min-height: 500px; }
+            .chart-area { min-height: 500px; padding: 30px; }
         }
         .chart-wrapper {
-            flex-grow: 1;
             position: relative;
             width: 100%;
             height: 100%;
+            min-height: 300px;
         }
 
-        footer { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.8rem; }
+        footer { text-align: center; padding: 60px 20px; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border); }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>INVESTMENT SIMULATOR</h1>
+        <h1>INVESTMENT SIMULATOR LAB</h1>
     </header>
 
     <main>
         <section>
             <div class="section-title">
-                <h2>01. 거치식 복리</h2>
-                <p>초기 자본의 시간 대비 성장</p>
-            </div>
-            <div class="dashboard">
-                <div class="card controls">
-                    <div class="control-item">
-                        <div class="label-row"><span class="label-text">초기 원금</span><span class="label-value" id="s1p-v">2,500만</span></div>
-                        <input type="range" id="s1p" min="1000000" max="100000000" step="1000000" value="25000000">
-                    </div>
-                    <div class="control-item">
-                        <div class="label-row"><span class="label-text">연 수익률</span><span class="label-value" id="s1r-v">7.0%</span></div>
-                        <input type="range" id="s1r" min="1" max="20" step="0.5" value="7">
-                    </div>
-                    <div class="control-item">
-                        <div class="label-row"><span class="label-text">투자기간</span><span class="label-value" id="s1y-v">20년</span></div>
-                        <input type="range" id="s1y" min="1" max="50" step="1" value="20">
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">최종 예상 자산</div>
-                        <div class="stat-value" id="s1-res">—</div>
-                    </div>
-                </div>
-                <div class="card chart-area">
-                    <div class="chart-wrapper"><canvas id="chart1"></canvas></div>
-                </div>
-            </div>
-        </section>
-
-        <section>
-            <div class="section-title">
-                <h2>02. 적립식 투자</h2>
-                <p>매월 납입을 통한 자산 형성</p>
-            </div>
-            <div class="dashboard">
-                <div class="card controls">
-                    <div class="control-item">
-                        <div class="label-row"><span class="label-text">매월 적립액</span><span class="label-value" id="s2m-v">100만</span></div>
-                        <input type="range" id="s2m" min="100000" max="5000000" step="100000" value="1000000">
-                    </div>
-                    <div class="control-item">
-                        <div class="label-row"><span class="label-text">기대 수익률</span><span class="label-value" id="s2r-v">8.0%</span></div>
-                        <input type="range" id="s2r" min="1" max="20" step="0.5" value="8">
-                    </div>
-                    <div class="control-item">
-                        <div class="label-row"><span class="label-text">적립 기간</span><span class
+                <h2>01
