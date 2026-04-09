@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>투자 시뮬레이터 | 복리의 힘과 은퇴 설계</title>
-    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <!-- ✅ FIX 1: Google Fonts 제거 → 시스템 폰트로 교체 (차단 원인 제거) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
     <style>
         :root {
@@ -19,14 +19,14 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Pretendard', sans-serif;
+            /* ✅ FIX 1: 시스템 한글 폰트로 교체 */
+            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif;
             background-color: var(--bg-body);
             color: var(--text-main);
             width: 100%;
             overflow-x: hidden;
         }
 
-        /* Hero Header */
         .hero {
             max-width: 1200px;
             margin: 0 auto;
@@ -47,7 +47,6 @@
             word-break: keep-all;
         }
 
-        /* Layout */
         main { max-width: 1200px; margin: 0 auto; padding: 20px; }
         section { margin-bottom: 60px; }
         .section-header { margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
@@ -58,7 +57,6 @@
             .dashboard { display: grid; grid-template-columns: 380px 1fr; align-items: stretch; }
         }
 
-        /* Card & Controls */
         .card {
             background: var(--bg-card);
             border-radius: 20px;
@@ -69,8 +67,14 @@
         .control-item { margin-bottom: 20px; }
         .label-row { display: flex; justify-content: space-between; margin-bottom: 10px; }
         .label-text { font-size: 0.9rem; color: var(--text-muted); font-weight: 600; }
-        .label-value { color: var(--primary); font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; font-weight: 700; }
-        
+        .label-value {
+            color: var(--primary);
+            /* ✅ FIX 1: JetBrains Mono 제거 → 시스템 monospace */
+            font-family: 'Courier New', Consolas, monospace;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
         input[type=range] { width: 100%; height: 8px; border-radius: 10px; accent-color: var(--primary); cursor: pointer; }
 
         .stat-box {
@@ -81,12 +85,24 @@
             border: 1px solid rgba(16, 185, 129, 0.2);
         }
         .stat-label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px; }
-        .stat-value { font-size: 1.6rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+        .stat-value {
+            font-size: 1.6rem;
+            font-weight: 800;
+            font-family: 'Courier New', Consolas, monospace;
+        }
 
-        /* Chart Area */
-        .chart-area { min-height: 350px; position: relative; }
-        @media (max-width: 600px) { .chart-area { min-height: 300px; } }
-        canvas { width: 100% !important; height: 100% !important; }
+        /* ✅ FIX 2: chart-area에 고정 height 지정, canvas 스타일 수정 */
+        .chart-area {
+            position: relative;
+            height: 380px;   /* min-height → 고정 height */
+        }
+        @media (max-width: 600px) {
+            .chart-area { height: 300px; }
+        }
+        /* ✅ FIX 3: canvas height: 100% !important 제거 → Chart.js가 부모 기준으로 계산 */
+        canvas {
+            display: block;
+        }
 
         footer { text-align: center; padding: 40px; color: var(--text-muted); font-size: 0.8rem; border-top: 1px solid var(--border); }
     </style>
@@ -182,32 +198,33 @@
     <footer><p>© 2026 Investment Sim Lab. All Rights Reserved.</p></footer>
 
     <script>
-        // 전역 차트 객체 저장소
         const charts = {};
 
-        // 공통 포맷 함수
         const fmtWon = v => v >= 100000000 ? (v/100000000).toFixed(2) + '억 원' : (v/10000).toLocaleString() + '만 원';
-        const fmtK = v => (v/10000).toLocaleString() + '만';
+        const fmtK   = v => (v/10000).toLocaleString() + '만';
 
-        // 차트 초기화 함수
         function initChart(id, type, labels, datasets, stacked = false) {
             const ctx = document.getElementById(id).getContext('2d');
             if (charts[id]) charts[id].destroy();
-            
             charts[id] = new Chart(ctx, {
                 type: type,
                 data: { labels, datasets },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { labels: { color: '#f8fafc', font: { weight: '600' } } } },
+                    plugins: {
+                        legend: { labels: { color: '#f8fafc', font: { weight: '600' } } }
+                    },
                     scales: {
-                        y: { 
+                        y: {
                             stacked: stacked,
-                            ticks: { color: '#94a3b8', callback: v => v >= 100000000 ? (v/100000000).toFixed(1) + '억' : (v/10000).toLocaleString() + '만' },
+                            ticks: {
+                                color: '#94a3b8',
+                                callback: v => v >= 100000000 ? (v/100000000).toFixed(1) + '억' : (v/10000).toLocaleString() + '만'
+                            },
                             grid: { color: 'rgba(255,255,255,0.05)' }
                         },
-                        x: { 
+                        x: {
                             stacked: stacked,
                             ticks: { color: '#94a3b8' },
                             grid: { display: false }
@@ -217,7 +234,6 @@
             });
         }
 
-        // 01. 거치식 업데이트
         function updateS1() {
             const p = Number(document.getElementById('s1p').value);
             const r = Number(document.getElementById('s1r').value) / 100;
@@ -228,39 +244,37 @@
             document.getElementById('s1y-v').innerText = y + '년';
 
             const labels = Array.from({length: y + 1}, (_, i) => i + '년');
-            const data = labels.map((_, i) => Math.round(p * Math.pow(1 + r, i)));
+            const data   = labels.map((_, i) => Math.round(p * Math.pow(1 + r, i)));
             document.getElementById('s1-res').innerText = fmtWon(data[y]);
 
             initChart('chart1', 'line', labels, [{
                 label: '자산 총액',
-                data: data,
+                data,
                 borderColor: '#10b981',
-                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                backgroundColor: 'rgba(16,185,129,0.1)',
                 fill: true,
                 tension: 0.3,
                 pointRadius: 0
             }]);
         }
 
-        // 02. 거치+적립 업데이트
         function updateS2() {
             const seed = Number(document.getElementById('s2p').value);
-            const m = Number(document.getElementById('s2m').value);
-            const r = Number(document.getElementById('s2r').value) / 100;
-            const y = Number(document.getElementById('s2y').value);
+            const m    = Number(document.getElementById('s2m').value);
+            const r    = Number(document.getElementById('s2r').value) / 100;
+            const y    = Number(document.getElementById('s2y').value);
 
             document.getElementById('s2p-v').innerText = fmtK(seed);
             document.getElementById('s2m-v').innerText = fmtK(m);
             document.getElementById('s2r-v').innerText = (r*100).toFixed(1) + '%';
             document.getElementById('s2y-v').innerText = y + '년';
 
-            const labels = ['시작'];
-            const history = [seed];
+            const labels     = ['시작'];
+            const history    = [seed];
             const principals = [seed];
-            
             const monthlyRate = r / 12;
             let balance = seed;
-            let pSum = seed;
+            let pSum    = seed;
 
             for (let i = 1; i <= y; i++) {
                 labels.push(i + '년');
@@ -276,4 +290,56 @@
 
             initChart('chart2', 'bar', labels, [
                 { label: '투자 수익', data: history.map((v, i) => v - principals[i]), backgroundColor: '#10b981' },
-                { label: '원금 합계', data: principals, backgroundColor: '#47556
+                { label: '원금 합계', data: principals, backgroundColor: '#475569' }
+            ], true);
+        }
+
+        function updateS3() {
+            const p = Number(document.getElementById('s3p').value);
+            const r = Number(document.getElementById('s3r').value) / 100;
+            const w = Number(document.getElementById('s3w').value) / 100;
+
+            document.getElementById('s3p-v').innerText = p >= 100000000 ? (p/100000000).toFixed(1) + '억' : fmtK(p);
+            document.getElementById('s3r-v').innerText = (r*100).toFixed(1) + '%';
+            document.getElementById('s3w-v').innerText = (w*100).toFixed(1) + '%';
+
+            const monthly = (p * w) / 12;
+            document.getElementById('s3-res').innerText = Math.round(monthly/10000).toLocaleString() + '만 원';
+
+            const labels = Array.from({length: 31}, (_, i) => i + '년');
+            let bal = p;
+            const history = [p];
+            for (let i = 1; i <= 30; i++) {
+                bal = (bal * (1 + r)) - (p * w);
+                history.push(Math.round(Math.max(0, bal)));
+            }
+
+            initChart('chart3', 'line', labels, [{
+                label: '자산 잔액',
+                data: history,
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59,130,246,0.1)',
+                fill: true,
+                tension: 0.3,
+                pointRadius: 0
+            }]);
+        }
+
+        // ✅ FIX 4: window.onload 대신 DOMContentLoaded 사용
+        // (외부 폰트 로드를 기다리지 않고 DOM 준비 즉시 실행)
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('input[type=range]').forEach(input => {
+                input.addEventListener('input', () => {
+                    if (input.id.startsWith('s1')) updateS1();
+                    if (input.id.startsWith('s2')) updateS2();
+                    if (input.id.startsWith('s3')) updateS3();
+                });
+            });
+
+            updateS1();
+            updateS2();
+            updateS3();
+        });
+    </script>
+</body>
+</html>
