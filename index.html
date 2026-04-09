@@ -3,143 +3,200 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>복리의 힘 — 인터액티브 프레젠테이션</title>
+<title>복리의 마법 & 은퇴 설계 시뮬레이션</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/theme/black.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --teal: #1D9E75;
-  --teal-light: #9FE1CB;
-  --bg: #0f1117;
-  --surface: #1a1d27;
-  --surface2: #22263a;
-  --text: #e8eaf0;
-  --muted: #7a7f9a;
-  --border: rgba(255,255,255,0.08);
+  --primary: #2DD4BF; /* 활기찬 티알색 */
+  --primary-dark: #0D9488;
+  --bg-deep: #020617; /* 더 깊은 다크 모드 */
+  --bg-card: #1e293b;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --accent: #FB923C; /* 오렌지 포인트 */
+  --danger: #F87171;
 }
-.reveal { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); }
-.reveal .slides section {
-  text-align: left;
-  height: 100%;
-  box-sizing: border-box;
-  padding: 30px 40px;
-}
-.reveal h1 { font-size: 2.5em; line-height: 1.2; font-weight: 700; color: var(--text); }
-.reveal h2 { font-size: 1.6em; margin-bottom: 0.5em; font-weight: 700; color: var(--text); }
-.reveal p { font-size: 0.85em; color: var(--muted); line-height: 1.6; }
 
-/* 레이아웃 디자인 */
-.two-col {
+body { font-family: 'Pretendard', sans-serif; background-color: var(--bg-deep); }
+.reveal { background-color: var(--bg-deep); }
+.reveal .slides section { text-align: left; padding: 20px; box-sizing: border-box; }
+
+/* 헤더 및 제목 스타일 */
+.reveal h1 { font-size: 2.8em; font-weight: 800; color: var(--text-main); line-height: 1.1; margin-bottom: 20px; }
+.reveal h2 { font-size: 1.8em; font-weight: 700; color: var(--primary); margin-bottom: 15px; border-left: 5px solid var(--primary); padding-left: 15px; }
+
+/* 레이아웃 시스템 */
+.dashboard-grid {
   display: grid;
-  grid-template-columns: 1fr 1.5fr; /* PC: 좌측 입력, 우측 그래프 */
-  gap: 30px;
+  grid-template-columns: 380px 1fr; /* PC: 제어판 고정폭, 그래프 유연하게 */
+  gap: 25px;
   align-items: start;
 }
 
-/* 모바일 전용 레이아웃 (화면 폭이 800px 이하일 때) */
-@media (max-width: 800px) {
-  .two-col {
-    grid-template-columns: 1fr; /* 세로로 한 줄씩 배치 */
-    gap: 15px;
-  }
-  .reveal .slides section { padding: 20px; }
-  .chart-box { height: 280px !important; } /* 모바일에서 그래프 높이 최적화 */
+@media (max-width: 900px) {
+  .dashboard-grid { grid-template-columns: 1fr; gap: 15px; }
+  .reveal h1 { font-size: 1.8em; }
+  .reveal h2 { font-size: 1.4em; }
+  .chart-container { height: 280px !important; }
 }
 
-.ctrl-row { display: flex; align-items: center; gap: 15px; margin: 12px 0; }
-.ctrl-label { font-size: 0.7em; color: var(--muted); min-width: 90px; }
-.ctrl-val { font-size: 0.75em; font-family: 'DM Mono', monospace; color: var(--teal); min-width: 80px; text-align: right; font-weight: 700; }
-input[type=range] { flex: 1; accent-color: var(--teal); cursor: pointer; }
-
-.chart-box { 
-  background: var(--surface); 
-  border: 1px solid var(--border); 
-  border-radius: 16px; 
-  padding: 20px; 
-  height: 400px; /* PC 기본 높이 */
+/* 카드 스타일 */
+.card {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255,255,255,0.05);
 }
-.chart-title { font-size: 0.65em; color: var(--muted); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.05em; }
 
-.kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-top: 15px; }
-.kpi-label { font-size: 0.65em; color: var(--muted); text-transform: uppercase; margin-bottom: 5px; }
-.kpi-val { font-size: 1.8em; font-weight: 700; color: var(--teal); font-family: 'DM Mono', monospace; }
+/* 컨트롤 박스 */
+.control-group { margin-bottom: 20px; }
+.label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.label-text { font-size: 0.85em; color: var(--text-muted); font-weight: 600; }
+.label-value { font-family: 'JetBrains Mono', monospace; font-size: 1em; color: var(--primary); font-weight: 700; }
 
-.pension-result { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-top: 15px; }
-.pension-monthly { font-size: 2.2em; font-weight: 700; color: var(--teal); font-family: 'DM Mono', monospace; }
+input[type=range] {
+  width: 100%;
+  height: 8px;
+  background: #334155;
+  border-radius: 5px;
+  appearance: none;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
 
-/* 화살표 내비게이션 스타일 */
-.reveal .controls { color: var(--teal); }
+/* 결과 요약 박스 */
+.summary-box {
+  background: rgba(45, 212, 191, 0.1);
+  border: 1px solid rgba(45, 212, 191, 0.2);
+  border-radius: 15px;
+  padding: 15px;
+  margin-top: 20px;
+}
+.summary-label { font-size: 0.75em; color: var(--text-muted); text-transform: uppercase; margin-bottom: 5px; }
+.summary-value { font-size: 1.8em; font-weight: 800; color: var(--text-main); font-family: 'JetBrains Mono', monospace; }
+
+/* 차트 컨테이너 */
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: 480px;
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* 특수 문구 */
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 0.7em;
+  font-weight: 700;
+  margin-top: 10px;
+}
+.badge-info { background: rgba(251, 146, 60, 0.2); color: var(--accent); }
+
+/* 화살표 내비게이션 색상 */
+.reveal .controls { color: var(--primary); }
 </style>
 </head>
 <body>
 <div class="reveal">
 <div class="slides">
 
-<section>
-  <div style="height:100%; display:flex; flex-direction:column; justify-content:center;">
-    <div style="color:var(--teal); font-weight:500; letter-spacing:0.1em; margin-bottom:10px;">PROFIT SIMULATION</div>
-    <h1>복리의 힘<br><span style="color:var(--teal);">그리고 은퇴 설계</span></h1>
-    <p>화면 크기에 맞춰 최적화된 인터액티브 리포트입니다.<br>슬라이더를 조작하여 미래의 자산을 설계해 보세요.</p>
+<section data-transition="fade">
+  <div style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
+    <div style="background:var(--primary); color:var(--bg-deep); padding:5px 20px; border-radius:50px; font-weight:800; font-size:0.8em; margin-bottom:20px;">INVESTMENT STRATEGY</div>
+    <h1>복리의 마법과<br><span style="color:var(--primary);">은퇴 자산 설계</span></h1>
+    <p style="max-width:700px; color:var(--text-muted); font-size:1.1em;">시간과 수익률이 만났을 때 자산은 어떻게 변화할까요?<br>직접 수치를 조절하며 미래를 확인해보세요.</p>
+    <div style="margin-top:40px; font-size:0.8em; color:var(--primary); font-weight:600;">시작하려면 화살표(→)를 누르세요</div>
   </div>
 </section>
 
 <section>
-  <h2>01. 복리의 마법</h2>
-  <div class="two-col">
-    <div>
-      <div class="ctrl-row"><span class="ctrl-label">투자 원금</span><input type="range" id="s2p" min="1000000" max="100000000" step="1000000" value="25000000" oninput="s2update()"><span class="ctrl-val" id="s2pv">2,500만</span></div>
-      <div class="ctrl-row"><span class="ctrl-label">연 수익률</span><input type="range" id="s2r" min="1" max="20" step="0.5" value="7" oninput="s2update()"><span class="ctrl-val" id="s2rv">7%</span></div>
-      <div class="ctrl-row"><span class="ctrl-label">투자 기간</span><input type="range" id="s2y" min="1" max="40" step="1" value="20" oninput="s2update()"><span class="ctrl-val" id="s2yv">20년</span></div>
-      <div class="kpi">
-        <div class="kpi-label">예상 도달 금액</div>
-        <div class="kpi-val" id="s2final">—</div>
+  <h2>01. 거치식 복리의 위력</h2>
+  <div class="dashboard-grid">
+    <div class="card">
+      <div class="control-group">
+        <div class="label-row"><span class="label-text">초기 원금</span><span class="label-value" id="s1pv">2,500만</span></div>
+        <input type="range" id="s1p" min="1000000" max="100000000" step="1000000" value="25000000" oninput="updateS1()">
       </div>
-      <div id="s2rule72" style="margin-top:15px; font-size:0.7em; color:var(--muted);"></div>
+      <div class="control-group">
+        <div class="label-row"><span class="label-text">연 수익률</span><span class="label-value" id="s1rv">7.0%</span></div>
+        <input type="range" id="s1r" min="1" max="15" step="0.5" value="7" oninput="updateS1()">
+      </div>
+      <div class="control-group">
+        <div class="label-row"><span class="label-text">투자기간 (년)</span><span class="label-value" id="s1yv">20년</span></div>
+        <input type="range" id="s1y" min="1" max="40" step="1" value="20" oninput="updateS1()">
+      </div>
+      <div class="summary-box">
+        <div class="summary-label">최종 예상 자산</div>
+        <div class="summary-value" id="s1result">—</div>
+        <div class="badge badge-info" id="s1rule"></div>
+      </div>
     </div>
-    <div class="chart-box">
-      <div class="chart-title">자산 성장 곡선 (단리 vs 복리)</div>
-      <canvas id="s2chart"></canvas>
+    <div class="chart-container">
+      <canvas id="chartS1"></canvas>
     </div>
   </div>
 </section>
 
 <section>
-  <h2>02. 매달 적립식 투자</h2>
-  <div class="two-col">
-    <div>
-      <div class="ctrl-row"><span class="ctrl-label">초기 자금</span><input type="range" id="s4p" min="0" max="100000000" step="1000000" value="10000000" oninput="s4update()"><span class="ctrl-val" id="s4pv">1,000만</span></div>
-      <div class="ctrl-row"><span class="ctrl-label">월 적립액</span><input type="range" id="s4m" min="0" max="3000000" step="100000" value="1000000" oninput="s4update()"><span class="ctrl-val" id="s4mv">100만</span></div>
-      <div class="ctrl-row"><span class="ctrl-label">연 수익률</span><input type="range" id="s4r" min="1" max="15" step="0.5" value="8" oninput="s4update()"><span class="ctrl-val" id="s4rv">8%</span></div>
-      <div class="ctrl-row"><span class="ctrl-label">적립 기간</span><input type="range" id="s4y" min="1" max="30" step="1" value="10" oninput="s4update()"><span class="ctrl-val" id="s4yv">10년</span></div>
-      <div class="kpi">
-        <div class="kpi-label">최종 모은 돈</div>
-        <div class="kpi-val" id="s4final">—</div>
+  <h2>02. 매월 적립식 투자</h2>
+  <div class="dashboard-grid">
+    <div class="card">
+      <div class="control-group">
+        <div class="label-row"><span class="label-text">매월 적립금</span><span class="label-value" id="s2mv">100만</span></div>
+        <input type="range" id="s2m" min="100000" max="5000000" step="100000" value="1000000" oninput="updateS2()">
+      </div>
+      <div class="control-group">
+        <div class="label-row"><span class="label-text">기대 수익률</span><span class="label-value" id="s2rv">8.0%</span></div>
+        <input type="range" id="s2r" min="1" max="15" step="0.5" value="8" oninput="updateS2()">
+      </div>
+      <div class="control-group">
+        <div class="label-row"><span class="label-text">적립 기간</span><span class="label-value" id="s2yv">15년</span></div>
+        <input type="range" id="s2y" min="1" max="30" step="1" value="15" oninput="updateS2()">
+      </div>
+      <div class="summary-box">
+        <div class="summary-label">투자 후 예상 목돈</div>
+        <div class="summary-value" id="s2result">—</div>
+        <div style="font-size:0.7em; color:var(--text-muted); margin-top:5px;">원금: <span id="s2principal" style="color:var(--text-main);">—</span></div>
       </div>
     </div>
-    <div class="chart-box">
-      <div class="chart-title">누적 원금과 투자 수익 비중</div>
-      <canvas id="s4chart"></canvas>
+    <div class="chart-container">
+      <canvas id="chartS2"></canvas>
     </div>
   </div>
 </section>
 
 <section>
   <h2>03. 은퇴 연금 인출 전략</h2>
-  <div class="two-col">
-    <div>
-      <div class="ctrl-row"><span class="ctrl-label">은퇴 원금</span><input type="range" id="s5p" min="50000000" max="1000000000" step="10000000" value="500000000" oninput="s5update()"><span class="ctrl-val" id="s5pv">5억</span></div>
-      <div class="ctrl-row"><span class="ctrl-label">운용 수익률</span><input type="range" id="s5r" min="1" max="12" step="0.5" value="6" oninput="s5update()"><span class="ctrl-val" id="s5rv">6%</span></div>
-      <div class="ctrl-row"><span class="ctrl-label">연간 인출률</span><input type="range" id="s5w" min="1" max="10" step="0.5" value="4" oninput="s5update()"><span class="ctrl-val" id="s5wv">4%</span></div>
-      <div class="pension-result">
-        <div class="pension-monthly" id="s5monthly">—</div>
-        <div style="font-size:0.65em; color:var(--muted);">매월 세전 수령 가능 금액</div>
+  <div class="dashboard-grid">
+    <div class="card">
+      <div class="control-group">
+        <div class="label-row"><span class="label-text">은퇴 시점 원금</span><span class="label-value" id="s3pv">5억</span></div>
+        <input type="range" id="s3p" min="50000000" max="1000000000" step="10000000" value="500000000" oninput="updateS3()">
       </div>
-      <div id="s5status" style="margin-top:10px; font-size:0.75em; font-weight:bold;"></div>
+      <div class="control-group">
+        <div class="label-row"><span class="label-text">자산 운용 수익률</span><span class="label-value" id="s3rv">5.0%</span></div>
+        <input type="range" id="s3r" min="1" max="12" step="0.5" value="5" oninput="updateS3()">
+      </div>
+      <div class="control-group">
+        <div class="label-row"><span class="label-text">연간 인출률</span><span class="label-value" id="s3wv">4.0%</span></div>
+        <input type="range" id="s3w" min="1" max="10" step="0.5" value="4" oninput="updateS3()">
+      </div>
+      <div class="summary-box" style="background:rgba(30, 41, 59, 0.8);">
+        <div class="summary-label">매월 세전 수령액</div>
+        <div class="summary-value" id="s3result" style="color:var(--accent);">—</div>
+        <div id="s3status" style="margin-top:10px; font-size:0.75em; font-weight:700;"></div>
+      </div>
     </div>
-    <div class="chart-box">
-      <div class="chart-title">향후 30년 자산 잔액 추이</div>
-      <canvas id="s5chart"></canvas>
+    <div class="chart-container">
+      <canvas id="chartS3"></canvas>
     </div>
   </div>
 </section>
@@ -150,149 +207,153 @@ input[type=range] { flex: 1; accent-color: var(--teal); cursor: pointer; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-// Reveal.js 초기화 - 화면 비율 및 화살표 설정 최적화
-Reveal.initialize({ 
-  hash: true, 
-  margin: 0.05,
-  minScale: 0.2,
-  maxScale: 2.0,
-  controls: true, 
-  controlsBackArrows: 'always', 
-  progress: true, 
+// Reveal.js 설정
+Reveal.initialize({
+  hash: true,
+  controls: true,
+  progress: true,
   center: false,
-  width: 1200, 
-  height: 800 
+  width: 1280,
+  height: 800,
+  margin: 0.1,
+  controlsBackArrows: 'always'
 });
 
 const charts = {};
-// 그래프 축 가독성 설정 (요청하신 대로 크게 유지)
-const commonOptions = {
+
+// 공통 차트 옵션 (읽기 쉬운 폰트 적용)
+const chartOptions = {
   responsive: true,
   maintainAspectRatio: false,
-  plugins: { legend: { labels: { color: '#e8eaf0', font: { size: 14 } } } },
+  plugins: {
+    legend: { labels: { color: '#f8fafc', font: { size: 14, weight: '600', family: 'Pretendard' } } },
+    tooltip: { padding: 15, titleFont: { size: 16 }, bodyFont: { size: 14 } }
+  },
   scales: {
-    x: {
-      ticks: { color: '#7a7f9a', font: { size: 14 } },
-      grid: { color: 'rgba(255,255,255,0.05)' }
-    },
-    y: {
+    x: { ticks: { color: '#94a3b8', font: { size: 13 } }, grid: { display: false } },
+    y: { 
       ticks: { 
-        color: '#7a7f9a', 
-        font: { size: 14 },
-        callback: v => v >= 100000000 ? (v/100000000).toFixed(1)+'억' : (v/10000).toLocaleString()+'만'
+        color: '#94a3b8', 
+        font: { size: 13 },
+        callback: v => v >= 100000000 ? (v/100000000).toFixed(1) + '억' : (v/10000).toLocaleString() + '만'
       },
       grid: { color: 'rgba(255,255,255,0.05)' }
     }
   }
 };
 
-function fmtM(v) {
-  if (v >= 100000000) return (v/100000000).toFixed(2)+'억원';
-  return (v/10000).toLocaleString()+'만원';
-}
+// 숫자 포맷터
+const fmtK = v => (v/10000).toLocaleString() + '만';
+const fmtWon = v => v >= 100000000 ? (v/100000000).toFixed(2) + '억 원' : (v/10000).toLocaleString() + '만 원';
 
-function s2update() {
-  const P = +document.getElementById('s2p').value;
-  const r = +document.getElementById('s2r').value / 100;
-  const Y = +document.getElementById('s2y').value;
-  document.getElementById('s2pv').textContent = (P/10000).toLocaleString()+'만';
-  document.getElementById('s2rv').textContent = (r*100).toFixed(1)+'%';
-  document.getElementById('s2yv').textContent = Y+'년';
-  const final = P * Math.pow(1+r, Y);
-  document.getElementById('s2final').textContent = fmtM(final);
-  document.getElementById('s2rule72').innerHTML = `💡 <b>72의 법칙:</b> 원금이 2배가 되는 데 약 <span style="color:var(--teal)">${(72/(r*100)).toFixed(1)}년</span> 걸립니다.`;
+// 01. 거치식 업데이트
+function updateS1() {
+  const p = +document.getElementById('s1p').value;
+  const r = +document.getElementById('s1r').value / 100;
+  const y = +document.getElementById('s1y').value;
 
-  const labels = Array.from({length:Y+1},(_,i)=>i+'년');
-  const data = labels.map((_,i)=>Math.round(P*Math.pow(1+r,i)));
-  const simple = labels.map((_,i)=>Math.round(P*(1+(r*i))));
-  
-  if (charts.s2) charts.s2.destroy();
-  charts.s2 = new Chart(document.getElementById('s2chart'), {
+  document.getElementById('s1pv').textContent = fmtK(p);
+  document.getElementById('s1rv').textContent = (r*100).toFixed(1) + '%';
+  document.getElementById('s1yv').textContent = y + '년';
+
+  const labels = Array.from({length: y + 1}, (_, i) => i + '년');
+  const compound = labels.map((_, i) => Math.round(p * Math.pow(1 + r, i)));
+  const simple = labels.map((_, i) => Math.round(p * (1 + (r * i))));
+
+  document.getElementById('s1result').textContent = fmtWon(compound[y]);
+  document.getElementById('s1rule').textContent = `72의 법칙: 원금 2배까지 약 ${(72/(r*100)).toFixed(1)}년`;
+
+  if (charts.s1) charts.s1.destroy();
+  charts.s1 = new Chart(document.getElementById('chartS1'), {
     type: 'line',
-    data: { labels, datasets: [
-      { label: '복리(Compound)', data, borderColor: '#1D9E75', backgroundColor: 'rgba(29,158,117,0.1)', fill: true, tension: 0.3 },
-      { label: '단리(Simple)', data: simple, borderColor: '#7a7f9a', borderDash: [5, 5], fill: false, tension: 0 }
-    ] },
-    options: commonOptions
-  });
-}
-
-function s4update() {
-  const P = +document.getElementById('s4p').value;
-  const M = +document.getElementById('s4m').value;
-  const r = +document.getElementById('s4r').value / 100;
-  const Y = +document.getElementById('s4y').value;
-  document.getElementById('s4pv').textContent = (P/10000).toLocaleString()+'만';
-  document.getElementById('s4mv').textContent = (M/10000).toLocaleString()+'만';
-  document.getElementById('s4rv').textContent = (r*100).toFixed(1)+'%';
-  document.getElementById('s4yv').textContent = Y+'년';
-
-  let current = P;
-  const history = [P];
-  const principal = [P];
-  for(let i=1; i<=Y; i++) {
-    current = current * (1+r) + (M * 12);
-    history.push(Math.round(current));
-    principal.push(P + (M * 12 * i));
-  }
-  document.getElementById('s4final').textContent = fmtM(history[Y]);
-
-  if (charts.s4) charts.s4.destroy();
-  charts.s4 = new Chart(document.getElementById('s4chart'), {
-    type: 'bar',
-    data: { 
-      labels: Array.from({length:Y+1},(_,i)=>i+'년'),
+    data: {
+      labels,
       datasets: [
-        { label: '투자 수익', data: history.map((v,i)=>v-principal[i]), backgroundColor: '#1D9E75' },
-        { label: '누적 원금', data: principal, backgroundColor: '#22263a' }
+        { label: '복리 자산', data: compound, borderColor: '#2DD4BF', backgroundColor: 'rgba(45, 212, 191, 0.1)', fill: true, tension: 0.4, borderWidth: 3, pointRadius: 0 },
+        { label: '단리 자산', data: simple, borderColor: '#94a3b8', borderDash: [5, 5], fill: false, tension: 0, borderWidth: 2, pointRadius: 0 }
       ]
     },
-    options: { ...commonOptions, scales: { ...commonOptions.scales, x: { ...commonOptions.scales.x, stacked: true }, y: { ...commonOptions.scales.y, stacked: true } } }
+    options: chartOptions
   });
 }
 
-function s5update() {
-  const P = +document.getElementById('s5p').value;
-  const r = +document.getElementById('s5r').value / 100;
-  const wr = +document.getElementById('s5w').value / 100;
-  document.getElementById('s5pv').textContent = P >= 100000000 ? (P/100000000).toFixed(1)+'억' : (P/10000).toLocaleString()+'만';
-  document.getElementById('s5rv').textContent = (r*100).toFixed(1)+'%';
-  document.getElementById('s5wv').textContent = (wr*100).toFixed(1)+'%';
+// 02. 적립식 업데이트
+function updateS2() {
+  const m = +document.getElementById('s2m').value;
+  const r = +document.getElementById('s2r').value / 100;
+  const y = +document.getElementById('s2y').value;
 
-  const monthly = (P * wr) / 12;
-  document.getElementById('s5monthly').textContent = (Math.round(monthly/10000)).toLocaleString() + '만원';
+  document.getElementById('s2mv').textContent = fmtK(m);
+  document.getElementById('s2rv').textContent = (r*100).toFixed(1) + '%';
+  document.getElementById('s2yv').textContent = y + '년';
 
-  let balance = P;
-  const history = [P];
+  let total = 0;
+  const history = [0];
+  const principal = [0];
+  for(let i=1; i<=y; i++) {
+    total = (total + (m * 12)) * (1 + r);
+    history.push(Math.round(total));
+    principal.push(m * 12 * i);
+  }
+
+  document.getElementById('s2result').textContent = fmtWon(history[y]);
+  document.getElementById('s2principal').textContent = fmtWon(principal[y]);
+
+  if (charts.s2) charts.s2.destroy();
+  charts.s2 = new Chart(document.getElementById('chartS2'), {
+    type: 'bar',
+    data: {
+      labels: Array.from({length: y + 1}, (_, i) => i + '년'),
+      datasets: [
+        { label: '누적 수익', data: history.map((v, i) => v - principal[i]), backgroundColor: '#2DD4BF' },
+        { label: '납입 원금', data: principal, backgroundColor: '#334155' }
+      ]
+    },
+    options: { ...chartOptions, scales: { ...chartOptions.scales, x: { stacked: true }, y: { ...chartOptions.scales.y, stacked: true } } }
+  });
+}
+
+// 03. 은퇴 인출 업데이트
+function updateS3() {
+  const p = +document.getElementById('s3p').value;
+  const r = +document.getElementById('s3r').value / 100;
+  const w = +document.getElementById('s3w').value / 100;
+
+  document.getElementById('s3pv').textContent = p >= 100000000 ? (p/100000000).toFixed(1) + '억' : fmtK(p);
+  document.getElementById('s3rv').textContent = (r*100).toFixed(1) + '%';
+  document.getElementById('s3wv').textContent = (w*100).toFixed(1) + '%';
+
+  const monthly = (p * w) / 12;
+  document.getElementById('s3result').textContent = (Math.round(monthly/10000)).toLocaleString() + '만 원';
+
+  let balance = p;
+  const history = [p];
   for(let i=1; i<=30; i++) {
-    balance = (balance * (1+r)) - (P * wr);
+    balance = (balance * (1 + r)) - (p * w);
     history.push(Math.round(Math.max(0, balance)));
   }
 
-  const isSafe = r >= wr;
-  const statusEl = document.getElementById('s5status');
-  statusEl.textContent = isSafe ? "✅ 원금이 보존되는 안전한 계획입니다." : "⚠️ 자산이 점차 고갈됩니다. 인출률을 낮추세요.";
-  statusEl.style.color = isSafe ? "var(--teal)" : "#E24B4A";
+  const isSafe = r >= w;
+  const statusEl = document.getElementById('s3status');
+  statusEl.textContent = isSafe ? "✅ 원금이 유지/증가되는 안전한 구조입니다." : "⚠️ 원금이 고갈되고 있습니다. 인출률을 낮추세요.";
+  statusEl.style.color = isSafe ? "#2DD4BF" : "#F87171";
 
-  if (charts.s5) charts.s5.destroy();
-  charts.s5 = new Chart(document.getElementById('s5chart'), {
+  if (charts.s3) charts.s3.destroy();
+  charts.s3 = new Chart(document.getElementById('chartS3'), {
     type: 'line',
-    data: { 
-      labels: Array.from({length:31},(_,i)=>i+'년'),
-      datasets: [{ label: '자산 잔액', data: history, borderColor: isSafe ? '#1D9E75' : '#E24B4A', borderWidth: 3, pointRadius: 0, fill: true, backgroundColor: isSafe ? 'rgba(29,158,117,0.05)' : 'rgba(226,75,74,0.05)' }] 
+    data: {
+      labels: Array.from({length: 31}, (_, i) => i + '년'),
+      datasets: [{ label: '잔여 자산 추이', data: history, borderColor: isSafe ? '#2DD4BF' : '#F87171', backgroundColor: isSafe ? 'rgba(45, 212, 191, 0.05)' : 'rgba(248, 113, 113, 0.05)', fill: true, tension: 0.3, pointRadius: 0, borderWidth: 3 }]
     },
-    options: commonOptions
+    options: chartOptions
   });
 }
 
-// 초기 실행 및 리사이즈 이벤트
-s2update(); s4update(); s5update();
-window.addEventListener('resize', () => {
-  Object.values(charts).forEach(c => c && c.resize());
-});
-Reveal.on('slidechanged', () => {
-  Object.values(charts).forEach(c => c && c.resize());
-});
+// 초기 호출 및 리사이즈 대응
+updateS1(); updateS2(); updateS3();
+window.addEventListener('resize', () => Object.values(charts).forEach(c => c && c.resize()));
+Reveal.on('slidechanged', () => Object.values(charts).forEach(c => c && c.resize()));
+
 </script>
 </body>
 </html>
