@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S&P500 투자 시뮬레이션</title>
+<style>
+  :root{
+    --bg:#f5f6f8;
+    --card:#ffffff;
+    --text:#1c2230;
+    --muted:#6b7280;
+    --border:#e3e6ec;
+    --accent:#2563eb;
+    --accent-soft:#eaf1ff;
+    --green:#0f9d6e;
+    --green-soft:#e8f8f1;
+    --amber:#c8791a;
+    --amber-soft:#fbf1e3;
+    --gray-line:#9aa3b2;
+    --shadow: 0 1px 2px rgba(16,24,40,0.04), 0 4px 12px rgba(16,24,40,0.06);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic","Apple SD Gothic Neo",Roboto,sans-serif;
+    line-height:1.5;
+    padding:24px 16px 64px;
+  }
+  .wrap{max-width:960px;margin:0 auto;}
+  header{margin-bottom:24px;}
+  h1{font-size:1.6rem;margin:0 0 6px;letter-spacing:-0.01em;}
+  .subtitle{color:var(--muted);font-size:0.92rem;margin:0;}
+  .disclaimer{
+    margin-top:14px;
+    background:#fff8e6;
+    border:1px solid #f1dfa8;
+    color:#7a5c00;
+    font-size:0.82rem;
+    padding:10px 14px;
+    border-radius:10px;
+  }
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    box-shadow:var(--shadow);
+    padding:20px;
+    margin-bottom:20px;
+  }
+  .card h2{
+    font-size:1.02rem;
+    margin:0 0 16px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .badge{
+    font-size:0.68rem;
+    padding:2px 8px;
+    border-radius:999px;
+    background:var(--accent-soft);
+    color:var(--accent);
+    font-weight:600;
+  }
+  .form-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px 20px;
+  }
+  .field{display:flex;flex-direction:column;gap:6px;}
+  .field.span2{grid-column:1 / -1;}
+  label{font-size:0.83rem;font-weight:600;color:#374151;}
+  .hint{font-size:0.74rem;color:var(--muted);margin-top:-2px;}
+  input[type=number], select{
+    font-size:0.95rem;
+    padding:9px 11px;
+    border-radius:9px;
+    border:1px solid #d3d8e0;
+    background:#fbfcfe;
+    color:var(--text);
+    width:100%;
+  }
+  input[type=number]:focus, select:focus{
+    outline:none;
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px var(--accent-soft);
+  }
+  .rate-row{display:flex;align-items:center;gap:10px;}
+  input[type=range]{flex:1;accent-color:var(--accent);}
+  .rate-value{
+    min-width:56px;
+    text-align:right;
+    font-variant-numeric:tabular-nums;
+    font-weight:700;
+    color:var(--accent);
+  }
+  .run-btn{
+    margin-top:18px;
+    width:100%;
+    padding:13px;
+    border:none;
+    border-radius:10px;
+    background:var(--accent);
+    color:white;
+    font-size:1rem;
+    font-weight:700;
+    cursor:pointer;
+    transition:background .15s ease;
+  }
+  .run-btn:hover{background:#1d4ed8;}
+  .error-msg{
+    color:#b91c1c;
+    background:#fef2f2;
+    border:1px solid #fecaca;
+    padding:8px 12px;
+    border-radius:8px;
+    font-size:0.83rem;
+    margin-top:12px;
+    display:none;
+  }
+
+  .results-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+  }
+  .result-box{
+    border-radius:12px;
+    padding:16px 18px;
+  }
+  .result-box.invest{background:var(--green-soft);border:1px solid #bfe7d6;}
+  .result-box.deposit{background:var(--amber-soft);border:1px solid #eccd9c;}
+  .result-box h3{margin:0 0 10px;font-size:0.95rem;}
+  .result-box.invest h3{color:var(--green);}
+  .result-box.deposit h3{color:var(--amber);}
+  .stat-line{display:flex;justify-content:space-between;font-size:0.85rem;padding:4px 0;border-bottom:1px dashed rgba(0,0,0,0.08);}
+  .stat-line:last-child{border-bottom:none;}
+  .stat-line .k{color:var(--muted);}
+  .stat-line .v{font-weight:700;font-variant-numeric:tabular-nums;}
+  .final-value{font-size:1.4rem;font-weight:800;margin:2px 0 10px;font-variant-numeric:tabular-nums;}
+  .final-value.invest{color:var(--green);}
+  .final-value.deposit{color:var(--amber);}
+
+  .index-note{
+    margin-top:14px;
+    font-size:0.8rem;
+    color:var(--muted);
+    background:#f5f6f8;
+    border-radius:8px;
+    padding:8px 12px;
+  }
+  .index-note b{color:var(--text);}
+
+  .legend{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:10px;font-size:0.82rem;}
+  .legend-item{display:flex;align-items:center;gap:6px;color:#374151;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  .chart-scroll{width:100%;overflow-x:auto;}
+  svg#chart{width:100%;height:auto;display:block;min-width:320px;}
+
+  .tooltip{
+    position:absolute;
+    pointer-events:none;
+    background:rgba(28,34,48,0.95);
+    color:#fff;
+    font-size:0.76rem;
+    padding:8px 10px;
+    border-radius:8px;
+    line-height:1.45;
+    transform:translate(-50%,-110%);
+    white-space:nowrap;
+    opacity:0;
+    transition:opacity .1s ease;
+    z-index:5;
+  }
+  .chart-wrap{position:relative;}
+
+  footer{
+    text-align:center;
+    color:var(--muted);
+    font-size:0.76rem;
+    margin-top:28px;
+  }
+
+  @media (max-width:640px){
+    .form-grid{grid-template-columns:1fr;}
+    .results-grid{grid-template-columns:1fr;}
+    h1{font-size:1.35rem;}
+    body{padding:16px 10px 48px;}
+    .card{padding:16px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>📈 S&P500 투자 시뮬레이션</h1>
+    <p class="subtitle">첫 거치금과 매월 적립금을 입력하면, S&P500 역사적 수익률을 기준으로 한 투자 결과와 은행 예금 결과를 비교해 드립니다.</p>
+    <div class="disclaimer">
+      ⚠️ 본 시뮬레이션은 1928~2024년 S&P500 연간 총수익률(배당 재투자 기준) 공개 참고 데이터를 바탕으로 한 <b>교육용 근사 계산</b>입니다. 실제 투자 상품·수수료·세금·환율 변동은 반영되지 않았으며, 과거 수익률이 미래 수익을 보장하지 않습니다. 실제 투자 결정 시에는 반드시 공식 데이터와 전문가 상담을 참고하세요.
+    </div>
+  </header>
+
+  <section class="card">
+    <h2>1️⃣ 조건 입력 <span class="badge">STEP 1</span></h2>
+    <div class="form-grid">
+      <div class="field">
+        <label for="initial">첫 거치 금액 (원)</label>
+        <input type="number" id="initial" value="5000000" min="0" step="100000">
+        <span class="hint">시작 시점에 한 번에 넣는 금액</span>
+      </div>
+      <div class="field">
+        <label for="monthly">매월 적립 금액 (원)</label>
+        <input type="number" id="monthly" value="300000" min="0" step="10000">
+        <span class="hint">매월 추가로 납입하는 금액</span>
+      </div>
+      <div class="field">
+        <label for="startYear">시작 연도</label>
+        <select id="startYear"></select>
+      </div>
+      <div class="field">
+        <label for="endYear">목표(종료) 연도</label>
+        <select id="endYear"></select>
+      </div>
+      <div class="field span2">
+        <label for="depositRate">은행 예금 연 이자율</label>
+        <div class="rate-row">
+          <input type="range" id="depositRateRange" min="0" max="10" step="0.1" value="3.5">
+          <input type="number" id="depositRate" min="0" max="20" step="0.1" value="3.5" style="width:90px;">
+          <span class="rate-value">%</span>
+        </div>
+        <span class="hint">비교할 예금 상품의 연이율(단리가 아닌 월복리로 계산)을 직접 설정하세요</span>
+      </div>
+    </div>
+    <div class="error-msg" id="errorMsg"></div>
+    <button class="run-btn" id="runBtn">시뮬레이션 실행</button>
+  </section>
+
+  <section class="card" id="resultsCard" style="display:none;">
+    <h2>2️⃣ 결과 비교 <span class="badge">STEP 2</span></h2>
+    <div class="results-grid">
+      <div class="result-box invest">
+        <h3>💹 S&P500 투자</h3>
+        <div class="final-value invest" id="investFinal">-</div>
+        <div class="stat-line"><span class="k">총 납입원금</span><span class="v" id="investPrincipal">-</span></div>
+        <div class="stat-line"><span class="k">총 수익금</span><span class="v" id="investProfit">-</span></div>
+        <div class="stat-line"><span class="k">총 수익률</span><span class="v" id="investReturnPct">-</span></div>
+        <div class="stat-line"><span class="k">연평균 환산 수익률(근사)</span><span class="v" id="investCagr">-</span></div>
+      </div>
+      <div class="result-box deposit">
+        <h3>🏦 은행 예금</h3>
+        <div class="final-value deposit" id="depositFinal">-</div>
+        <div class="stat-line"><span class="k">총 납입원금</span><span class="v" id="depositPrincipal">-</span></div>
+        <div class="stat-line"><span class="k">총 수익금</span><span class="v" id="depositProfit">-</span></div>
+        <div class="stat-line"><span class="k">총 수익률</span><span class="v" id="depositReturnPct">-</span></div>
+        <div class="stat-line"><span class="k">연평균 환산 수익률(근사)</span><span class="v" id="depositCagr">-</span></div>
+      </div>
+    </div>
+    <div class="index-note" id="indexNote"></div>
+  </section>
+
+  <section class="card" id="chartCard" style="display:none;">
+    <h2>3️⃣ 그래프 <span class="badge">STEP 3</span></h2>
+    <div class="legend">
+      <span class="legend-item"><span class="swatch" style="background:var(--gray-line);"></span>S&P500 지수 변동 (거치금만 투자 시)</span>
+      <span class="legend-item"><span class="swatch" style="background:var(--green);"></span>나의 투자 (거치금+매월적립)</span>
+      <span class="legend-item"><span class="swatch" style="background:var(--amber);"></span>은행 예금 (거치금+매월적립)</span>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-scroll">
+        <svg id="chart" viewBox="0 0 900 420" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+      <div class="tooltip" id="tooltip"></div>
+    </div>
+  </section>
+
+  <footer>S&P500 연간 총수익률(배당 재투자) 공개 참고 데이터 기반 · 교육용 시뮬레이션</footer>
+</div>
+
+<script>
+// S&P500 연간 총수익률(%) — 배당 재투자 기준, 공개 참고 데이터 (1928~2024)
+const SP500_RETURNS = {
+  1928:43.61,1929:-8.42,1930:-24.90,1931:-43.34,1932:-8.19,1933:53.99,1934:-1.44,1935:47.67,
+  1936:33.92,1937:-35.03,1938:31.12,1939:-0.41,1940:-9.78,1941:-11.59,1942:20.34,1943:25.90,
+  1944:19.75,1945:36.44,1946:-8.07,1947:5.71,1948:5.50,1949:18.79,1950:31.71,1951:24.02,
+  1952:18.37,1953:-0.99,1954:52.62,1955:31.56,1956:6.56,1957:-10.78,1958:43.36,1959:11.96,
+  1960:0.47,1961:26.89,1962:-8.73,1963:22.80,1964:16.48,1965:12.45,1966:-10.06,1967:23.98,
+  1968:11.06,1969:-8.50,1970:4.01,1971:14.31,1972:18.98,1973:-14.66,1974:-26.47,1975:37.20,
+  1976:23.84,1977:-7.18,1978:6.56,1979:18.44,1980:32.42,1981:-4.91,1982:21.41,1983:22.51,
+  1984:6.27,1985:32.16,1986:18.47,1987:5.23,1988:16.81,1989:31.49,1990:-3.17,1991:30.55,
+  1992:7.60,1993:10.08,1994:1.32,1995:37.58,1996:22.96,1997:33.36,1998:28.58,1999:21.04,
+  2000:-9.11,2001:-11.88,2002:-22.10,2003:28.68,2004:10.88,2005:4.91,2006:15.79,2007:5.49,
+  2008:-37.00,2009:26.46,2010:15.06,2011:2.11,2012:16.00,2013:32.39,2014:13.69,2015:1.38,
+  2016:11.96,2017:21.83,2018:-4.38,2019:31.49,2020:18.40,2021:28.71,2022:-18.11,2023:26.29,
+  2024:25.02
+};
+const YEARS = Object.keys(SP500_RETURNS).map(Number).sort((a,b)=>a-b);
+const MIN_YEAR = YEARS[0];
+const MAX_YEAR = YEARS[YEARS.length-1];
+
+function monthlyRateFromAnnual(pct){
+  return Math.pow(1 + pct/100, 1/12) - 1;
+}
+
+// ---------- populate year selects ----------
+const startSel = document.getElementById('startYear');
+const endSel = document.getElementById('endYear');
+YEARS.forEach(y=>{
+  const o = document.createElement('option');
+  o.value = y; o.textContent = y + '년';
+  startSel.appendChild(o);
+});
+function refreshEndOptions(){
+  const s = parseInt(startSel.value,10);
+  endSel.innerHTML = '';
+  YEARS.filter(y=>y>s).forEach(y=>{
+    const o = document.createElement('option');
+    o.value = y; o.textContent = y + '년';
+    endSel.appendChild(o);
+  });
+}
+startSel.value = 1994;
+refreshEndOptions();
+endSel.value = MAX_YEAR;
+startSel.addEventListener('change', refreshEndOptions);
+
+// ---------- rate slider <-> number sync ----------
+const rateRange = document.getElementById('depositRateRange');
+const rateNum = document.getElementById('depositRate');
+rateRange.addEventListener('input', ()=>{ rateNum.value = rateRange.value; });
+rateNum.addEventListener('input', ()=>{
+  let v = parseFloat(rateNum.value);
+  if(!isNaN(v)){
+    rateRange.value = Math.min(10, Math.max(0, v));
+  }
+});
+
+// ---------- formatting ----------
+function formatWon(n){
+  const rounded = Math.round(n);
+  return '₩' + rounded.toLocaleString('ko-KR');
+}
+function formatWonShort(n){
+  const abs = Math.abs(n);
+  if(abs >= 1e8) return (n/1e8).toFixed(1).replace(/\.0$/,'') + '억';
+  if(abs >= 1e4) return (n/1e4).toFixed(0) + '만';
+  return Math.round(n).toString();
+}
+function formatPct(n){
+  return (n>=0?'+':'') + n.toFixed(1) + '%';
+}
+
+// ---------- simulation core ----------
+function simulate(startYear, endYear, initial, monthly, depositAnnualPct){
+  const totalMonths = (endYear - startYear + 1) * 12;
+  const depositMonthlyRate = monthlyRateFromAnnual(depositAnnualPct);
+
+  let indexOnly = initial;   // 거치금만, 적립 없음 (순수 S&P500 지수 추종)
+  let investBal = initial;   // 거치금 + 매월적립, S&P500 수익률 적용
+  let depositBal = initial;  // 거치금 + 매월적립, 예금 이자율 적용
+
+  const yearlyIndex = [indexOnly];
+  const yearlyInvest = [investBal];
+  const yearlyDeposit = [depositBal];
+  const labelYears = [startYear - 1]; // baseline point before year 1 starts
+
+  for(let t=0; t<totalMonths; t++){
+    const year = startYear + Math.floor(t/12);
+    const monthInYear = t % 12;
+    const spMonthlyRate = monthlyRateFromAnnual(SP500_RETURNS[year]);
+
+    indexOnly *= (1 + spMonthlyRate);
+
+    investBal += monthly;
+    investBal *= (1 + spMonthlyRate);
+
+    depositBal += monthly;
+    depositBal *= (1 + depositMonthlyRate);
+
+    if(monthInYear === 11){
+      yearlyIndex.push(indexOnly);
+      yearlyInvest.push(investBal);
+      yearlyDeposit.push(depositBal);
+      labelYears.push(year);
+    }
+  }
+
+  const years = endYear - startYear + 1;
+  const investPrincipal = initial + monthly * totalMonths;
+  const depositPrincipal = initial + monthly * totalMonths;
+
+  return {
+    totalMonths, years,
+    labelYears, yearlyIndex, yearlyInvest, yearlyDeposit,
+    investFinal: investBal, investPrincipal,
+    depositFinal: depositBal, depositPrincipal,
+    indexFinal: indexOnly
+  };
+}
+
+// ---------- chart rendering ----------
+function renderChart(result){
+  const svg = document.getElementById('chart');
+  const NS = 'http://www.w3.org/2000/svg';
+  svg.innerHTML = '';
+
+  const W = 900, H = 420;
+  const marginL = 70, marginR = 20, marginT = 20, marginB = 40;
+  const plotW = W - marginL - marginR;
+  const plotH = H - marginT - marginB;
+
+  const allVals = [...result.yearlyIndex, ...result.yearlyInvest, ...result.yearlyDeposit];
+  const maxVal = Math.max(...allVals) * 1.08;
+  const minVal = 0;
+
+  const n = result.labelYears.length;
+  const x = i => marginL + (plotW * i / (n-1));
+  const y = v => marginT + plotH - (plotH * (v - minVal) / (maxVal - minVal));
+
+  // gridlines + y labels
+  const gridCount = 5;
+  for(let g=0; g<=gridCount; g++){
+    const val = minVal + (maxVal-minVal) * g / gridCount;
+    const yy = y(val);
+    const line = document.createElementNS(NS,'line');
+    line.setAttribute('x1', marginL); line.setAttribute('x2', W-marginR);
+    line.setAttribute('y1', yy); line.setAttribute('y2', yy);
+    line.setAttribute('stroke', '#eef0f4');
+    line.setAttribute('stroke-width', '1');
+    svg.appendChild(line);
+
+    const label = document.createElementNS(NS,'text');
+    label.setAttribute('x', marginL - 10);
+    label.setAttribute('y', yy + 4);
+    label.setAttribute('text-anchor', 'end');
+    label.setAttribute('font-size', '11');
+    label.setAttribute('fill', '#6b7280');
+    label.textContent = formatWonShort(val);
+    svg.appendChild(label);
+  }
+
+  // x labels (sparse)
+  const xLabelStep = Math.ceil(n / 10);
+  for(let i=0;i<n;i+=xLabelStep){
+    const label = document.createElementNS(NS,'text');
+    label.setAttribute('x', x(i));
+    label.setAttribute('y', H - marginB + 18);
+    label.setAttribute('text-anchor', 'middle');
+    label.setAttribute('font-size', '11');
+    label.setAttribute('fill', '#6b7280');
+    label.textContent = result.labelYears[i];
+    svg.appendChild(label);
+  }
+  // ensure last label shown
+  {
+    const label = document.createElementNS(NS,'text');
+    label.setAttribute('x', x(n-1));
+    label.setAttribute('y', H - marginB + 18);
+    label.setAttribute('text-anchor', 'middle');
+    label.setAttribute('font-size', '11');
+    label.setAttribute('fill', '#6b7280');
+    label.textContent = result.labelYears[n-1];
+    svg.appendChild(label);
+  }
+
+  // axis lines
+  const axisX = document.createElementNS(NS,'line');
+  axisX.setAttribute('x1', marginL); axisX.setAttribute('x2', W-marginR);
+  axisX.setAttribute('y1', H-marginB); axisX.setAttribute('y2', H-marginB);
+  axisX.setAttribute('stroke', '#c7ccd6');
+  svg.appendChild(axisX);
+
+  function pathFor(vals){
+    return vals.map((v,i)=> (i===0?'M':'L') + x(i).toFixed(1) + ',' + y(v).toFixed(1)).join(' ');
+  }
+
+  function drawLine(vals, color, dashed){
+    const path = document.createElementNS(NS,'path');
+    path.setAttribute('d', pathFor(vals));
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', color);
+    path.setAttribute('stroke-width', dashed ? 2 : 2.5);
+    if(dashed) path.setAttribute('stroke-dasharray', '5,4');
+    path.setAttribute('stroke-linejoin', 'round');
+    path.setAttribute('stroke-linecap', 'round');
+    svg.appendChild(path);
+  }
+
+  drawLine(result.yearlyIndex, '#9aa3b2', true);
+  drawLine(result.yearlyDeposit, '#c8791a', false);
+  drawLine(result.yearlyInvest, '#0f9d6e', false);
+
+  // hover interaction
+  const tooltip = document.getElementById('tooltip');
+  const overlay = document.createElementNS(NS,'rect');
+  overlay.setAttribute('x', marginL); overlay.setAttribute('y', marginT);
+  overlay.setAttribute('width', plotW); overlay.setAttribute('height', plotH);
+  overlay.setAttribute('fill', 'transparent');
+  svg.appendChild(overlay);
+
+  const guide = document.createElementNS(NS,'line');
+  guide.setAttribute('y1', marginT); guide.setAttribute('y2', H-marginB);
+  guide.setAttribute('stroke', '#c7ccd6');
+  guide.setAttribute('stroke-width', '1');
+  guide.setAttribute('opacity', '0');
+  svg.appendChild(guide);
+
+  function handleMove(clientX, clientY, rectEl){
+    const rect = rectEl.getBoundingClientRect();
+    const relX = (clientX - rect.left) / rect.width * W;
+    let idx = Math.round((relX - marginL) / plotW * (n-1));
+    idx = Math.max(0, Math.min(n-1, idx));
+    guide.setAttribute('x1', x(idx)); guide.setAttribute('x2', x(idx));
+    guide.setAttribute('opacity', '1');
+
+    tooltip.style.opacity = '1';
+    const tx = (x(idx)/W) * rect.width + rect.left - rect.left + rectEl.parentElement.offsetLeft;
+    tooltip.style.left = ((x(idx)/W) * rect.width) + 'px';
+    tooltip.style.top = ((y(Math.max(result.yearlyIndex[idx],result.yearlyInvest[idx],result.yearlyDeposit[idx]))/H) * rect.height) + 'px';
+    tooltip.innerHTML =
+      '<b>' + result.labelYears[idx] + '년 말</b><br>' +
+      '<span style="color:#0f9d6e;">● 나의 투자</span> ' + formatWon(result.yearlyInvest[idx]) + '<br>' +
+      '<span style="color:#c8791a;">● 예금</span> ' + formatWon(result.yearlyDeposit[idx]) + '<br>' +
+      '<span style="color:#9aa3b2;">● S&P500 지수(거치금만)</span> ' + formatWon(result.yearlyIndex[idx]);
+  }
+
+  overlay.addEventListener('mousemove', (e)=>handleMove(e.clientX, e.clientY, svg));
+  overlay.addEventListener('mouseleave', ()=>{ tooltip.style.opacity='0'; guide.setAttribute('opacity','0'); });
+  overlay.addEventListener('touchmove', (e)=>{
+    if(e.touches[0]) handleMove(e.touches[0].clientX, e.touches[0].clientY, svg);
+    e.preventDefault();
+  }, {passive:false});
+  overlay.addEventListener('touchend', ()=>{ tooltip.style.opacity='0'; guide.setAttribute('opacity','0'); });
+}
+
+// ---------- main run ----------
+document.getElementById('runBtn').addEventListener('click', ()=>{
+  const errorEl = document.getElementById('errorMsg');
+  errorEl.style.display = 'none';
+
+  const initial = parseFloat(document.getElementById('initial').value) || 0;
+  const monthly = parseFloat(document.getElementById('monthly').value) || 0;
+  const startYear = parseInt(startSel.value, 10);
+  const endYear = parseInt(endSel.value, 10);
+  const depositRate = parseFloat(rateNum.value) || 0;
+
+  if(initial < 0 || monthly < 0){
+    errorEl.textContent = '금액은 0 이상이어야 합니다.';
+    errorEl.style.display = 'block';
+    return;
+  }
+  if(endYear <= startYear){
+    errorEl.textContent = '목표 연도는 시작 연도보다 이후여야 합니다.';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  const result = simulate(startYear, endYear, initial, monthly, depositRate);
+
+  document.getElementById('investFinal').textContent = formatWon(result.investFinal);
+  document.getElementById('investPrincipal').textContent = formatWon(result.investPrincipal);
+  document.getElementById('investProfit').textContent = formatWon(result.investFinal - result.investPrincipal);
+  document.getElementById('investReturnPct').textContent = formatPct((result.investFinal/result.investPrincipal - 1) * 100);
+  document.getElementById('investCagr').textContent = formatPct((Math.pow(result.investFinal/result.investPrincipal, 1/result.years) - 1) * 100);
+
+  document.getElementById('depositFinal').textContent = formatWon(result.depositFinal);
+  document.getElementById('depositPrincipal').textContent = formatWon(result.depositPrincipal);
+  document.getElementById('depositProfit').textContent = formatWon(result.depositFinal - result.depositPrincipal);
+  document.getElementById('depositReturnPct').textContent = formatPct((result.depositFinal/result.depositPrincipal - 1) * 100);
+  document.getElementById('depositCagr').textContent = formatPct((Math.pow(result.depositFinal/result.depositPrincipal, 1/result.years) - 1) * 100);
+
+  document.getElementById('indexNote').innerHTML =
+    '📊 참고: 만약 <b>매월 적립 없이 첫 거치금(' + formatWon(initial) + ')만</b> 넣고 그대로 두었다면, ' +
+    startYear + '년 → ' + endYear + '년 사이 S&P500 지수 추종 결과는 <b>' + formatWon(result.indexFinal) + '</b>가 되었을 것입니다.';
+
+  document.getElementById('resultsCard').style.display = 'block';
+  document.getElementById('chartCard').style.display = 'block';
+
+  renderChart(result);
+
+  document.getElementById('resultsCard').scrollIntoView({behavior:'smooth', block:'nearest'});
+});
+
+// run once on load with defaults
+document.getElementById('runBtn').click();
+</script>
+</body>
+</html>
