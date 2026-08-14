@@ -208,14 +208,14 @@
     <h2>1️⃣ 조건 입력 <span class="badge">STEP 1</span></h2>
     <div class="form-grid">
       <div class="field">
-        <label for="initial">첫 거치 금액 (원)</label>
-        <input type="number" id="initial" value="5000000" min="0" step="100000">
-        <span class="hint">시작 시점에 한 번에 넣는 금액</span>
+        <label for="initial">첫 거치 금액 (만원)</label>
+        <input type="number" id="initial" value="500" min="0" step="10">
+        <span class="hint">시작 시점에 한 번에 넣는 금액 · 만원 단위로 입력 (예: 500 = 500만원)</span>
       </div>
       <div class="field">
-        <label for="monthly">매월 적립 금액 (원)</label>
-        <input type="number" id="monthly" value="300000" min="0" step="10000">
-        <span class="hint">매월 추가로 납입하는 금액</span>
+        <label for="monthly">매월 적립 금액 (만원)</label>
+        <input type="number" id="monthly" value="30" min="0" step="1">
+        <span class="hint">매월 추가로 납입하는 금액 · 만원 단위로 입력 (예: 30 = 30만원)</span>
       </div>
       <div class="field">
         <label for="startYear">시작 연도</label>
@@ -551,8 +551,8 @@ document.getElementById('runBtn').addEventListener('click', ()=>{
   const errorEl = document.getElementById('errorMsg');
   errorEl.style.display = 'none';
 
-  const initial = parseFloat(document.getElementById('initial').value) || 0;
-  const monthly = parseFloat(document.getElementById('monthly').value) || 0;
+  const initial = (parseFloat(document.getElementById('initial').value) || 0) * 10000;
+  const monthly = (parseFloat(document.getElementById('monthly').value) || 0) * 10000;
   const startYear = parseInt(startSel.value, 10);
   const endYear = parseInt(endSel.value, 10);
   const depositRate = parseFloat(rateNum.value) || 0;
